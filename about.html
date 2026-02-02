@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About CodeMaster | Online Compiler & Converter</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dark-theme">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-code"></i> CodeMaster
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="compiler.html"><i class="fas fa-cogs"></i> Compiler</a></li>
+                <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
+                <li><a href="blog.html"><i class="fas fa-newspaper"></i> Blog</a></li>
+                <li><a href="about.html" class="active"><i class="fas fa-info-circle"></i> About</a></li>
+                <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                <li class="admin-only" style="display: none;">
+                    <a href="admin.html" class="admin-btn"><i class="fas fa-user-shield"></i> Admin</a>
+                </li>
+            </ul>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>About CodeMaster</h1>
+                    <p class="hero-subtitle">Empowering developers with powerful, browser-based tools for coding, compilation, and language conversion.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission Section -->
+        <section class="mission">
+            <div class="container">
+                <div class="mission-content">
+                    <h2 class="section-title">Our Mission</h2>
+                    <p>CodeMaster was created with a simple goal: to make coding accessible to everyone. We believe that powerful development tools should be available to all developers, students, and educators without the need for complex setups or expensive software.</p>
+                    
+                    <div class="mission-stats">
+                        <div class="stat">
+                            <i class="fas fa-laptop-code"></i>
+                            <div>
+                                <h3>100% Browser-Based</h3>
+                                <p>No installations required</p>
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-globe"></i>
+                            <div>
+                                <h3>Global Access</h3>
+                                <p>Available worldwide</p>
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-lock"></i>
+                            <div>
+                                <h3>Privacy First</h3>
+                                <p>Your code stays in your browser</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How to Use Section -->
+        <section class="detailed-how-to">
+            <div class="container">
+                <h2 class="section-title">How to Use CodeMaster</h2>
+                
+                <div class="usage-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Choose Your Tool</h3>
+                            <p>Select between our two main tools:</p>
+                            <ul>
+                                <li><strong>Compiler:</strong> For writing and executing code in 10+ programming languages</li>
+                                <li><strong>Converter:</strong> For translating code between different programming languages</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Using the Compiler</h3>
+                            <ol>
+                                <li>Select your programming language from the dropdown</li>
+                                <li>Write or paste your code in the editor</li>
+                                <li>Click "Compile & Run" to execute</li>
+                                <li>View output in the results panel</li>
+                                <li>Use "Save Code" to download your work</li>
+                                <li>Try the Web Compiler for HTML/CSS/JS projects</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Using the Converter</h3>
+                            <ol>
+                                <li>Select source and target languages</li>
+                                <li>Enter your code in the source editor</li>
+                                <li>Click "Convert" to translate</li>
+                                <li>Review and adjust the converted code</li>
+                                <li>Use "Swap Languages" to reverse conversion</li>
+                                <li>Save or copy the converted code</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Tips & Best Practices</h3>
+                            <ul>
+                                <li>Start with small code snippets to test functionality</li>
+                                <li>Use the example buttons to see conversion patterns</li>
+                                <li>Review converted code for language-specific optimizations</li>
+                                <li>Save your work regularly</li>
+                                <li>Check our blog for tutorials and updates</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Overview -->
+        <section class="features-overview">
+            <div class="container">
+                <h2 class="section-title">Why CodeMaster Stands Out</h2>
+                
+                <div class="feature-cards">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Instant Execution</h3>
+                        <p>No waiting for servers. Code compiles instantly in your browser using advanced JavaScript execution.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Complete Privacy</h3>
+                        <p>Your code never leaves your browser. No server storage, no tracking, complete confidentiality.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <h3>Smart Conversion</h3>
+                        <p>Advanced pattern matching for accurate code translation between programming languages.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3>Learning Focused</h3>
+                        <p>Perfect for students learning new languages or developers exploring different syntaxes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Supported Languages -->
+        <section class="supported-languages">
+            <div class="container">
+                <h2 class="section-title">Supported Programming Languages</h2>
+                
+                <div class="languages-grid">
+                    <div class="language">
+                        <i class="fab fa-js"></i>
+                        <h4>JavaScript</h4>
+                        <p>Full ES6+ support with console output simulation</p>
+                    </div>
+                    
+                    <div class="language">
+                        <i class="fab fa-python"></i>
+                        <h4>Python</h4>
+                        <p>Python 3 syntax with pattern-based execution</p>
+                    </div>
+                    
+                    <div class="language">
+                        <i class="fab fa-java"></i>
+                        <h4>Java</h4>
+                        <p>Java syntax analysis and output simulation</p>
+                    </div>
+                    
+                    <div class="language">
+                        <i class="fas fa-c"></i>
+                        <h4>C / C++</h4>
+                        <p>C and C++ syntax conversion and analysis</p>
+                    </div>
+                    
+                    <div class="language">
+                        <i class="fab fa-cuttlefish"></i>
+                        <h4>C#</h4>
+                        <p>C# syntax conversion with .NET patterns</p>
+                    </div>
+                    
+                    <div class="language">
+                        <i class="fab fa-go"></i>
+                        <h4>Go</h4>
+                        <p>Go language syntax support</p>
+                    </div>
+                    
+                    <div class="language">
+                        <i class="fas fa-rust"></i>
+                        <h4>Rust</h4>
+                        <p>Rust syntax analysis and conversion</p>
+                    </div>
+                    
+                    <div class="language">
+                        <i class="fab fa-php"></i>
+                        <h4>PHP</h4>
+                        <p>PHP server-side script simulation</p>
+                    </div>
+                    
+                    <div class="language">
+                        <i class="fab fa-swift"></i>
+                        <h4>Swift</h4>
+                        <p>Swift syntax for iOS/macOS development</p>
+                    </div>
+                    
+                    <div class="language">
+                        <i class="fas fa-code"></i>
+                        <h4>Web Technologies</h4>
+                        <p>HTML, CSS, JavaScript live preview compiler</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Getting Started -->
+        <section class="getting-started">
+            <div class="container">
+                <h2 class="section-title">Ready to Get Started?</h2>
+                <p>Whether you're learning to code, exploring new languages, or need quick code conversion, CodeMaster has you covered.</p>
+                
+                <div class="cta-buttons">
+                    <a href="compiler.html" class="btn btn-primary btn-large">
+                        <i class="fas fa-play"></i> Try the Compiler
+                    </a>
+                    <a href="converter.html" class="btn btn-secondary btn-large">
+                        <i class="fas fa-exchange-alt"></i> Try the Converter
+                    </a>
+                    <a href="blog.html" class="btn btn-outline btn-large">
+                        <i class="fas fa-book"></i> Read Tutorials
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-code"></i> CodeMaster</h3>
+                    <p>Powerful online compiler and language converter platform. Write, compile, and convert code instantly.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="compiler.html"><i class="fas fa-cogs"></i> Compiler</a></li>
+                        <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
+                        <li><a href="blog.html"><i class="fas fa-newspaper"></i> Blog</a></li>
+                        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Languages</h3>
+                    <ul>
+                        <li>JavaScript</li>
+                        <li>Python</li>
+                        <li>Java</li>
+                        <li>C++</li>
+                        <li>C#</li>
+                        <li>More...</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p><i class="fas fa-envelope"></i> contact@codemaster.dev</p>
+                    <p><i class="fas fa-globe"></i> www.codemaster.dev</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CodeMaster. All rights reserved. | Made with <i class="fas fa-heart"></i> for developers</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    
+    <style>
+        .mission {
+            padding: 80px 0;
+        }
+        
+        .mission-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .mission-content p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
+        
+        .mission-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .mission-stats .stat {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-align: left;
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .mission-stats .stat i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+        
+        .detailed-how-to {
+            padding: 80px 0;
+            background-color: var(--darker-bg);
+        }
+        
+        .usage-steps {
+            max-width: 900px;
+            margin: 3rem auto 0;
+        }
+        
+        .step {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .step-number {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .step-content h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .step-content ul,
+        .step-content ol {
+            color: var(--text-secondary);
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .step-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .features-overview {
+            padding: 80px 0;
+        }
+        
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .supported-languages {
+            padding: 80px 0;
+            background-color: var(--darker-bg);
+        }
+        
+        .languages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .language {
+            text-align: center;
+            padding: 2rem 1rem;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s;
+        }
+        
+        .language:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+        
+        .language i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .language:nth-child(1) i { color: #f7df1e; } /* JavaScript */
+        .language:nth-child(2) i { color: #3776ab; } /* Python */
+        .language:nth-child(3) i { color: #f89820; } /* Java */
+        .language:nth-child(4) i { color: #00599c; } /* C++ */
+        .language:nth-child(5) i { color: #9b4993; } /* C# */
+        .language:nth-child(6) i { color: #00add8; } /* Go */
+        .language:nth-child(7) i { color: #000000; } /* Rust */
+        .language:nth-child(8) i { color: #777bb4; } /* PHP */
+        .language:nth-child(9) i { color: #f05138; } /* Swift */
+        .language:nth-child(10) i { color: var(--primary-color); } /* Web */
+        
+        .language h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .language p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .getting-started {
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .getting-started p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 1rem auto 3rem;
+            line-height: 1.8;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .step {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .step-number {
+                margin: 0 auto;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+            
+            .cta-buttons .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</body>
+</html>

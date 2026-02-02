@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Compiler - CodeHub</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">CodeHub</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="compiler.html" class="active">Compiler</a>
+                <a href="converter.html">Converter</a>
+                <a href="blog.html">Blog</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="admin/index.html" class="admin-btn">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1>Online Code Compiler</h1>
+        
+        <div class="compiler-container">
+            <div class="compiler-controls">
+                <div class="language-selector">
+                    <label for="language">Language:</label>
+                    <select id="language">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="java">Java</option>
+                        <option value="cpp">C++</option>
+                        <option value="c">C</option>
+                        <option value="php">PHP</option>
+                        <option value="go">Go</option>
+                        <option value="rust">Rust</option>
+                        <option value="ruby">Ruby</option>
+                        <option value="swift">Swift</option>
+                    </select>
+                </div>
+                
+                <div class="code-actions">
+                    <button id="run-btn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Run Code
+                    </button>
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor-section">
+                <div class="code-editor">
+                    <h3>Code Editor</h3>
+                    <textarea id="code-input" placeholder="Write your code here...">// Sample code based on selected language
+console.log("Hello, World!");</textarea>
+                </div>
+                
+                <div class="output-section">
+                    <h3>Output</h3>
+                    <div id="output"></div>
+                    <div id="loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Running code...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script src="js/compiler.js"></script>
+</body>
+</html>
