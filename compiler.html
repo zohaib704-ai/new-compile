@@ -3,449 +3,1104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeMaster - Online Compiler</title>
+    <title>CodeMaster - Multi-Language Compiler</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Page-specific styles that extend your CSS */
+        /* Compiler-specific styles */
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary-color: #10b981;
+            --dark-bg: #1e1e2f;
+            --light-bg: #ffffff;
+            --editor-bg: #1e1e1e;
+            --editor-text: #d4d4d4;
+            --border-color: #e5e7eb;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo a {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4b5563;
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+
+        .nav-links a i {
+            font-size: 1.1rem;
+        }
+
+        /* Main Compiler Container */
         .compiler-container {
             max-width: 1400px;
             margin: 2rem auto;
             padding: 0 2rem;
         }
-        
+
+        /* Header Section */
         .compiler-header {
-            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
             margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-        
+
         .compiler-header h1 {
             font-size: 2.5rem;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
         }
-        
+
         .compiler-header p {
-            color: var(--text-secondary);
+            color: #6b7280;
+            font-size: 1.1rem;
+            max-width: 600px;
         }
-        
-        .compiler-wrapper {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+
+        /* Language Stats */
+        .language-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-badge {
+            background: #f3f4f6;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-badge i {
+            color: var(--primary-color);
+        }
+
+        /* Compiler Workspace */
+        .compiler-workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Editor Section */
+        .editor-section {
+            background: white;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-        
-        .compiler-toolbar {
-            background: var(--bg-secondary);
+
+        .editor-header {
+            background: #f8fafc;
             padding: 1rem 1.5rem;
             border-bottom: 1px solid var(--border-color);
             display: flex;
-            gap: 1rem;
+            justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-        }
-        
-        .language-select {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius);
-            font-size: 0.95rem;
-            min-width: 150px;
-            cursor: pointer;
-        }
-        
-        .language-select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        
-        .editor-area {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            height: 500px;
-        }
-        
-        .editor-panel {
-            background: #1e1e1e;
-            border-right: 1px solid var(--border-color);
-        }
-        
-        .editor-panel:last-child {
-            border-right: none;
-        }
-        
-        .editor-header {
-            background: #2d2d2d;
-            color: #999;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            border-bottom: 1px solid #404040;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        #code-editor, #output {
-            width: 100%;
-            height: calc(100% - 35px);
-            background: #1e1e1e;
-            color: #d4d4d4;
-            border: none;
-            padding: 1rem;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            resize: none;
-            overflow-y: auto;
-        }
-        
-        #code-editor:focus {
-            outline: none;
-        }
-        
-        .sample-section {
-            margin-top: 2rem;
-            padding: 2rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-        }
-        
-        .sample-title {
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-        }
-        
-        .sample-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
         }
-        
-        .sample-card {
-            background: var(--bg-secondary);
-            padding: 1rem;
-            border-radius: var(--border-radius);
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .language-selector label {
+            font-weight: 500;
+            color: #4b5563;
+        }
+
+        .language-selector select {
+            padding: 0.5rem 2rem 0.5rem 1rem;
             border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #1f2937;
+            background: white;
             cursor: pointer;
-            transition: var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
         }
-        
-        .sample-card:hover {
+
+        .language-selector select:focus {
+            outline: none;
             border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #6b7280;
+        }
+
+        .btn-icon:hover {
+            background: #f3f4f6;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-icon i {
+            font-size: 1.1rem;
+        }
+
+        /* Code Editor */
+        .code-editor {
+            background: var(--editor-bg);
+            height: 500px;
+            position: relative;
+        }
+
+        .code-editor textarea {
+            width: 100%;
+            height: 100%;
+            background: var(--editor-bg);
+            color: var(--editor-text);
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 1.5rem;
+            border: none;
+            resize: none;
+            outline: none;
+        }
+
+        .code-editor textarea::placeholder {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        /* Line Numbers (optional) */
+        .code-editor {
+            position: relative;
+        }
+
+        .line-numbers {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 50px;
+            background: #252526;
+            color: #858585;
+            text-align: right;
+            padding: 1.5rem 0.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            user-select: none;
+            border-right: 1px solid #3e3e42;
+        }
+
+        /* Output Section */
+        .output-section {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .output-header {
+            background: #f8fafc;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .output-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+
+        .output-header h3 i {
+            color: var(--secondary-color);
+        }
+
+        .output-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .output-content {
+            flex: 1;
+            background: #1e1e1e;
+            padding: 1.5rem;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .output-content pre {
+            color: #d4d4d4;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+        }
+
+        .output-content .output.success {
+            color: #10b981;
+        }
+
+        .output-content .output.error {
+            color: #ef4444;
+        }
+
+        .output-content .output.info {
+            color: #3b82f6;
+        }
+
+        .output-content .output.warning {
+            color: #f59e0b;
+        }
+
+        /* Control Buttons */
+        .control-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .btn-primary, .btn-secondary, .btn-success {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
         }
-        
-        .sample-card h4 {
-            color: var(--text-primary);
-            margin-bottom: 0.3rem;
+
+        .btn-secondary {
+            background: white;
+            color: #4b5563;
+            border: 1px solid var(--border-color);
         }
-        
-        .sample-card p {
-            color: var(--text-secondary);
+
+        .btn-secondary:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0d9488;
+        }
+
+        /* Examples Section */
+        .examples-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .examples-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .example-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border-color);
+        }
+
+        .example-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .example-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .example-card h4 i {
+            color: var(--primary-color);
+        }
+
+        .example-card p {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .example-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #e5e7eb;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: #4b5563;
+        }
+
+        /* Features Section */
+        .features-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h4 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #6b7280;
             font-size: 0.9rem;
         }
-        
-        @media (max-width: 768px) {
-            .editor-area {
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .compiler-workspace {
                 grid-template-columns: 1fr;
-                height: auto;
             }
             
-            .editor-panel {
-                height: 300px;
+            .editor-section, .output-section {
+                min-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
             }
             
-            .compiler-toolbar {
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .compiler-header h1 {
+                font-size: 2rem;
+            }
+            
+            .editor-header {
                 flex-direction: column;
                 align-items: stretch;
             }
+            
+            .language-selector {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-primary, .btn-secondary, .btn-success {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Dark theme support */
+        body.dark-theme .navbar {
+            background: rgba(30, 30, 47, 0.95);
+        }
+
+        body.dark-theme .nav-links a {
+            color: #e5e7eb;
+        }
+
+        body.dark-theme .compiler-header,
+        body.dark-theme .editor-section,
+        body.dark-theme .output-section,
+        body.dark-theme .examples-section,
+        body.dark-theme .feature-card {
+            background: #2d2d3a;
+            color: #e5e7eb;
+        }
+
+        body.dark-theme .compiler-header p,
+        body.dark-theme .example-card p,
+        body.dark-theme .feature-card p {
+            color: #9ca3af;
+        }
+
+        body.dark-theme .editor-header,
+        body.dark-theme .output-header {
+            background: #252532;
+            border-bottom-color: #3e3e4a;
+        }
+
+        body.dark-theme .example-card {
+            background: #252532;
+        }
+
+        body.dark-theme .tag {
+            background: #3e3e4a;
+            color: #e5e7eb;
+        }
+
+        body.dark-theme .btn-secondary {
+            background: #2d2d3a;
+            color: #e5e7eb;
+            border-color: #3e3e4a;
+        }
+
+        body.dark-theme .btn-secondary:hover {
+            background: #3e3e4a;
+        }
+
+        body.dark-theme .stat-badge {
+            background: #252532;
+            color: #e5e7eb;
         }
     </style>
 </head>
 <body>
+    <!-- Navigation -->
     <nav class="navbar">
-        <div class="container">
-            <a href="index.html" class="logo">
-                <i class="fas fa-code"></i>
-                CodeMaster
-            </a>
-            
-            <ul class="nav-links" id="navLinks">
-                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="compiler.html" class="active"><i class="fas fa-play"></i> Compiler</a></li>
-                <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
-                <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
-                <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
-            </ul>
-            
-            <div class="nav-controls">
-                <button class="theme-toggle" id="themeToggle">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">CodeMaster</a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="compiler.html" class="active"><i class="fas fa-code"></i> Compiler</a>
+                <a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a>
+                <a href="blog.html"><i class="fas fa-blog"></i> Blog</a>
+                <a href="about.html"><i class="fas fa-info-circle"></i> About</a>
+                <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+                <button id="theme-toggle" class="btn-icon">
                     <i class="fas fa-moon"></i>
                 </button>
-                <div class="hamburger" id="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
             </div>
         </div>
     </nav>
 
-    <main>
-        <div class="compiler-container">
-            <div class="compiler-header">
-                <h1><i class="fas fa-play" style="color: var(--primary-color);"></i> Multi-Language Compiler</h1>
-                <p>Write, compile, and execute code in real-time. Supports 10+ programming languages.</p>
-            </div>
+    <!-- Main Compiler Container -->
+    <div class="compiler-container">
+        <!-- Header Section -->
+        <div class="compiler-header">
+            <h1><i class="fas fa-code"></i> Multi-Language Compiler</h1>
+            <p>Write, compile, and run code in 10+ programming languages instantly. No setup required, everything runs in your browser.</p>
             
-<!-- Add this to your compiler.html where the compiler section is -->
-<div class="compiler-wrapper">
-    <div class="compiler-header">
-        <div class="language-selector">
-            <select id="language" class="language-select">
-                <option value="javascript">JavaScript</option>
-                <option value="python">Python</option>
-                <option value="java">Java</option>
-                <option value="cpp">C++</option>
-                <option value="csharp">C#</option>
-                <option value="php">PHP</option>
-                <option value="ruby">Ruby</option>
-                <option value="go">Go</option>
-                <option value="rust">Rust</option>
-                <option value="swift">Swift</option>
-            </select>
-            <div class="language-badge" id="language-badge">
-                <i class="fab fa-js"></i>
-                <span>JAVASCRIPT</span>
-            </div>
-        </div>
-        
-        <div class="server-status" id="server-status">
-            <span class="status-dot"></span>
-            <span>Server connected</span>
-        </div>
-    </div>
-    
-    <div class="editor-container">
-        <div class="editor-panel">
-            <div class="line-numbers" id="line-numbers">
-                <!-- Line numbers will be added by JavaScript -->
-            </div>
-            <textarea id="code-editor" placeholder="Write your code here..."></textarea>
-        </div>
-        
-        <div class="output-panel">
-            <div class="output-header">
-                <span><i class="fas fa-terminal"></i> Output</span>
-                <span class="execution-time" id="execution-time"></span>
-            </div>
-            <div id="output">
-                <div class="empty-output">
-                    <i class="fas fa-play-circle"></i>
-                    <p>Click "Run Code" or press Ctrl+Enter to execute</p>
+            <div class="language-stats">
+                <div class="stat-badge">
+                    <i class="fas fa-check-circle"></i> 10+ Languages
+                </div>
+                <div class="stat-badge">
+                    <i class="fas fa-bolt"></i> Instant Execution
+                </div>
+                <div class="stat-badge">
+                    <i class="fas fa-shield-alt"></i> No Server Storage
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="toolbar">
-        <button class="tool-btn" id="run-code">
-            <i class="fas fa-play"></i> Run (Ctrl+Enter)
-        </button>
-        <button class="tool-btn" id="clear-output">
-            <i class="fas fa-eraser"></i> Clear
-        </button>
-        <button class="tool-btn" id="save-code">
-            <i class="fas fa-save"></i> Save
-        </button>
-        <button class="tool-btn" id="load-code">
-            <i class="fas fa-folder-open"></i> Load
-        </button>
-        <button class="tool-btn" id="share-code">
-            <i class="fas fa-share-alt"></i> Share
-        </button>
-        <button class="tool-btn" id="download-code">
-            <i class="fas fa-download"></i> Download
-        </button>
-        <button class="tool-btn" id="load-sample">
-            <i class="fas fa-code-branch"></i> Sample
-        </button>
-    </div>
-</div>
 
-<div class="history-panel">
-    <h3><i class="fas fa-history"></i> Execution History</h3>
-    <div class="history-list" id="history-list">
-        <!-- History will be populated by JavaScript -->
-    </div>
-</div>
-
-      
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3><i class="fas fa-code"></i> CodeMaster</h3>
-                    <p>Powerful online compiler and converter for developers, students, and educators.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-discord"></i></a>
+        <!-- Compiler Workspace -->
+        <div class="compiler-workspace">
+            <!-- Editor Section -->
+            <div class="editor-section">
+                <div class="editor-header">
+                    <div class="language-selector">
+                        <label for="language-select"><i class="fas fa-laptop-code"></i> Language:</label>
+                        <select id="language-select">
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                            <option value="c">C</option>
+                            <option value="csharp">C#</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                            <option value="php">PHP</option>
+                            <option value="swift">Swift</option>
+                        </select>
+                    </div>
+                    <div class="editor-actions">
+                        <button class="btn-icon" id="save-code" title="Save Code">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button class="btn-icon" id="copy-code" title="Copy Code">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="btn-icon" id="clear-editor" title="Clear Editor">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn-icon" id="format-code" title="Format Code">
+                            <i class="fas fa-magic"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="footer-section">
-                    <h3><i class="fas fa-tools"></i> Tools</h3>
-                    <ul>
-                        <li><a href="compiler.html"><i class="fas fa-play"></i> Compiler</a></li>
-                        <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3><i class="fas fa-link"></i> Quick Links</h3>
-                    <ul>
-                        <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
-                        <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
-                        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3><i class="fas fa-shield-alt"></i> Legal</h3>
-                    <ul>
-                        <li><a href="#"><i class="fas fa-lock"></i> Privacy Policy</a></li>
-                        <li><a href="#"><i class="fas fa-file-contract"></i> Terms of Service</a></li>
-                    </ul>
+                
+                <div class="code-editor">
+                    <textarea id="code-editor" placeholder="// Write your code here...">// JavaScript Example: Fibonacci Sequence
+function fibonacci(n) {
+    if (n <= 1) return n;
+    return fibonacci(n-1) + fibonacci(n-2);
+}
+
+// Calculate first 10 numbers
+console.log("Fibonacci Sequence:");
+for (let i = 0; i < 10; i++) {
+    console.log(`F(${i}) = ${fibonacci(i)}`);
+}</textarea>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p><i class="fas fa-copyright"></i> 2026 CodeMaster. Made with <i class="fas fa-heart"></i> for developers</p>
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <div class="output-header">
+                    <h3><i class="fas fa-terminal"></i> Output</h3>
+                    <div class="output-actions">
+                        <button class="btn-icon" id="copy-output" title="Copy Output">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="btn-icon" id="clear-output" title="Clear Output">
+                            <i class="fas fa-eraser"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="output-content">
+                    <pre id="output">Ready to compile and run your code...</pre>
+                </div>
             </div>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="control-buttons">
+            <button class="btn-primary" id="run-code">
+                <i class="fas fa-play"></i> Run Code
+            </button>
+            <button class="btn-secondary" id="stop-code">
+                <i class="fas fa-stop"></i> Stop
+            </button>
+            <button class="btn-success" id="download-code">
+                <i class="fas fa-download"></i> Download
+            </button>
+        </div>
+
+        <!-- Code Examples Section -->
+        <div class="examples-section">
+            <h3><i class="fas fa-lightbulb"></i> Code Examples</h3>
+            <div class="examples-grid">
+                <div class="example-card" onclick="loadExample('fibonacci')">
+                    <h4><i class="fas fa-superscript"></i> Fibonacci Series</h4>
+                    <p>Generate Fibonacci sequence up to 10 numbers</p>
+                    <div class="example-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">Java</span>
+                    </div>
+                </div>
+                
+                <div class="example-card" onclick="loadExample('factorial')">
+                    <h4><i class="fas fa-calculator"></i> Factorial</h4>
+                    <p>Calculate factorial of a number</p>
+                    <div class="example-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">C++</span>
+                    </div>
+                </div>
+                
+                <div class="example-card" onclick="loadExample('prime')">
+                    <h4><i class="fas fa-shield"></i> Prime Numbers</h4>
+                    <p>Check if a number is prime</p>
+                    <div class="example-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">Java</span>
+                    </div>
+                </div>
+                
+                <div class="example-card" onclick="loadExample('palindrome')">
+                    <h4><i class="fas fa-exchange-alt"></i> Palindrome</h4>
+                    <p>Check if a string is palindrome</p>
+                    <div class="example-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">C#</span>
+                    </div>
+                </div>
+                
+                <div class="example-card" onclick="loadExample('sorting')">
+                    <h4><i class="fas fa-sort"></i> Bubble Sort</h4>
+                    <p>Sort array using bubble sort algorithm</p>
+                    <div class="example-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">Go</span>
+                    </div>
+                </div>
+                
+                <div class="example-card" onclick="loadExample('binary-search')">
+                    <h4><i class="fas fa-search"></i> Binary Search</h4>
+                    <p>Binary search implementation</p>
+                    <div class="example-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">Rust</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <div class="feature-card">
+                <i class="fas fa-rocket"></i>
+                <h4>Instant Execution</h4>
+                <p>Run your code instantly with our optimized compiler</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h4>Secure & Private</h4>
+                <p>Your code never leaves your browser</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-language"></i>
+                <h4>10+ Languages</h4>
+                <p>Support for all major programming languages</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-sync-alt"></i>
+                <h4>Real-time Output</h4>
+                <p>See compilation results as you type</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-code-branch"></i>
+                <h4>Syntax Highlighting</h4>
+                <p>Color-coded syntax for better readability</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-download"></i>
+                <h4>Export Code</h4>
+                <p>Download your code in multiple formats</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: #1e1e2f; color: white; padding: 2rem; margin-top: 4rem;">
+        <div style="max-width: 1400px; margin: 0 auto; text-align: center;">
+            <p>&copy; 2026 CodeMaster. All rights reserved. | Made with <i class="fas fa-heart" style="color: #ef4444;"></i> for developers</p>
         </div>
     </footer>
 
+    <!-- Scripts -->
+    <script src="compiler.js"></script>
     <script>
-        // Theme toggle
-        const themeToggle = document.getElementById('themeToggle');
-        themeToggle.addEventListener('click', () => {
+        // Theme toggle functionality
+        document.getElementById('theme-toggle').addEventListener('click', function() {
             document.body.classList.toggle('dark-theme');
-            const icon = themeToggle.querySelector('i');
+            const icon = this.querySelector('i');
             if (document.body.classList.contains('dark-theme')) {
                 icon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
             } else {
                 icon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
             }
         });
 
-        // Mobile menu
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
-        
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('active');
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-theme');
+            document.querySelector('#theme-toggle i').className = 'fas fa-sun';
+        }
+
+        // Copy code functionality
+        document.getElementById('copy-code').addEventListener('click', function() {
+            const code = document.getElementById('code-editor');
+            code.select();
+            document.execCommand('copy');
+            showNotification('Code copied to clipboard!', 'success');
         });
 
-        // Compiler functionality
-        const samples = {
-            fibonacci: `// Fibonacci Series
+        // Copy output functionality
+        document.getElementById('copy-output').addEventListener('click', function() {
+            const output = document.getElementById('output');
+            const textarea = document.createElement('textarea');
+            textarea.value = output.textContent;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showNotification('Output copied to clipboard!', 'success');
+        });
+
+        // Clear editor
+        document.getElementById('clear-editor').addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear the editor?')) {
+                document.getElementById('code-editor').value = '';
+                showNotification('Editor cleared', 'info');
+            }
+        });
+
+        // Clear output
+        document.getElementById('clear-output').addEventListener('click', function() {
+            document.getElementById('output').textContent = 'Output cleared...';
+            showNotification('Output cleared', 'info');
+        });
+
+        // Format code (basic formatting)
+        document.getElementById('format-code').addEventListener('click', function() {
+            const editor = document.getElementById('code-editor');
+            try {
+                // Try to format JSON if it's JavaScript object
+                const code = editor.value;
+                if (code.trim().startsWith('{') || code.trim().startsWith('[')) {
+                    const formatted = JSON.stringify(JSON.parse(code), null, 2);
+                    editor.value = formatted;
+                    showNotification('Code formatted successfully', 'success');
+                } else {
+                    showNotification('Auto-format only available for JSON', 'warning');
+                }
+            } catch (e) {
+                showNotification('Could not format code', 'error');
+            }
+        });
+
+        // Stop execution (simulated)
+        document.getElementById('stop-code').addEventListener('click', function() {
+            showNotification('Execution stopped', 'warning');
+        });
+
+        // Download code
+        document.getElementById('download-code').addEventListener('click', function() {
+            const code = document.getElementById('code-editor').value;
+            const language = document.getElementById('language-select').value;
+            const extensions = {
+                javascript: 'js',
+                python: 'py',
+                java: 'java',
+                cpp: 'cpp',
+                c: 'c',
+                csharp: 'cs',
+                go: 'go',
+                rust: 'rs',
+                php: 'php',
+                swift: 'swift'
+            };
+            
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `code.${extensions[language] || 'txt'}`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Code downloaded successfully!', 'success');
+        });
+
+        // Load example function
+        window.loadExample = function(example) {
+            const examples = {
+                fibonacci: {
+                    javascript: `// Fibonacci Sequence
 function fibonacci(n) {
     if (n <= 1) return n;
-    return fibonacci(n - 1) + fibonacci(n - 2);
+    return fibonacci(n-1) + fibonacci(n-2);
 }
 
-console.log("First 10 Fibonacci numbers:");
+console.log("Fibonacci Sequence:");
 for (let i = 0; i < 10; i++) {
     console.log(\`F(\${i}) = \${fibonacci(i)}\`);
 }`,
-            sort: `// Bubble Sort Implementation
-function bubbleSort(arr) {
-    let n = arr.length;
-    for (let i = 0; i < n - 1; i++) {
-        for (let j = 0; j < n - i - 1; j++) {
-            if (arr[j] > arr[j + 1]) {
-                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
-            }
+                    python: `# Fibonacci Sequence
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+print("Fibonacci Sequence:")
+for i in range(10):
+    print(f"F({i}) = {fibonacci(i)}")`,
+                    java: `public class Main {
+    public static int fibonacci(int n) {
+        if (n <= 1) return n;
+        return fibonacci(n-1) + fibonacci(n-2);
+    }
+    
+    public static void main(String[] args) {
+        System.out.println("Fibonacci Sequence:");
+        for (int i = 0; i < 10; i++) {
+            System.out.println("F(" + i + ") = " + fibonacci(i));
         }
     }
-    return arr;
-}
-
-const numbers = [64, 34, 25, 12, 22, 11, 90];
-console.log("Original array:", numbers);
-console.log("Sorted array:", bubbleSort([...numbers]));`,
-            palindrome: `// Palindrome Checker
-function isPalindrome(str) {
-    const clean = str.toLowerCase().replace(/[^a-z0-9]/g, '');
-    return clean === clean.split('').reverse().join('');
-}
-
-const testStrings = ["racecar", "hello", "A man, a plan, a canal: Panama"];
-testStrings.forEach(str => {
-    console.log(\`"\${str}" is \${isPalindrome(str) ? '' : 'not '}a palindrome\`);
-});`,
-            factorial: `// Factorial Calculator
+}`
+                },
+                factorial: {
+                    javascript: `// Factorial
 function factorial(n) {
-    if (n === 0 || n === 1) return 1;
+    if (n <= 1) return 1;
     return n * factorial(n - 1);
 }
 
-console.log("Factorial calculations:");
-for (let i = 0; i <= 10; i++) {
-    console.log(\`\${i}! = \${factorial(i)}\`);
-}`
+console.log("Factorial of 5:", factorial(5));`,
+                    python: `# Factorial
+def factorial(n):
+    if n <= 1:
+        return 1
+    return n * factorial(n - 1)
+
+print("Factorial of 5:", factorial(5))`
+                },
+                prime: {
+                    javascript: `// Prime Number Check
+function isPrime(num) {
+    if (num <= 1) return false;
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+        if (num % i === 0) return false;
+    }
+    return true;
+}
+
+console.log("Is 17 prime?", isPrime(17));
+console.log("Is 20 prime?", isPrime(20));`,
+                    python: `# Prime Number Check
+def is_prime(num):
+    if num <= 1:
+        return False
+    for i in range(2, int(num ** 0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+print("Is 17 prime?", is_prime(17))
+print("Is 20 prime?", is_prime(20))`
+                }
+            };
+
+            const currentLang = document.getElementById('language-select').value;
+            const editor = document.getElementById('code-editor');
+            
+            if (examples[example] && examples[example][currentLang]) {
+                editor.value = examples[example][currentLang];
+                showNotification(`Loaded ${example} example for ${currentLang}`, 'success');
+            } else if (examples[example] && examples[example].javascript) {
+                editor.value = examples[example].javascript;
+                document.getElementById('language-select').value = 'javascript';
+                showNotification(`Loaded ${example} example (JavaScript fallback)`, 'info');
+            } else {
+                showNotification('Example not available for selected language', 'warning');
+            }
         };
 
-        function runCode() {
-            const code = document.getElementById('code-editor').value;
-            const output = document.getElementById('output');
+        // Show notification function
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
+                color: white;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            `;
             
-            output.innerHTML = '';
+            document.body.appendChild(notification);
             
-            try {
-                const logs = [];
-                const customConsole = {
-                    log: (...args) => {
-                        logs.push(args.map(arg => 
-                            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-                        ).join(' '));
-                    }
-                };
-                
-                const func = new Function('console', code);
-                func(customConsole);
-                
-                output.innerHTML = logs.join('<br>') || 'No output';
-            } catch (error) {
-                output.innerHTML = `<span style="color: var(--danger);">❌ Error: ${error.message}</span>`;
-            }
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
 
-        function clearOutput() {
-            document.getElementById('output').innerHTML = 'Output cleared...';
-        }
-
-        function loadSample(type) {
-            const editor = document.getElementById('code-editor');
-            if (samples[type]) {
-                editor.value = samples[type];
-            }
+        // Add animation styles if not present
+        if (!document.querySelector('#notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'notification-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
         }
     </script>
-    <!-- Add at the end of compiler.html and converter.html -->
-<script src="compiler.js"></script>
-<!-- or for converter -->
-<script src="converter.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
