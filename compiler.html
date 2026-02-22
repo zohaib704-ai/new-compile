@@ -3,84 +3,432 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Compiler - CodeHub</title>
+    <title>CodeMaster - Online Compiler</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Page-specific styles that extend your CSS */
+        .compiler-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .compiler-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .compiler-header h1 {
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .compiler-header p {
+            color: var(--text-secondary);
+        }
+        
+        .compiler-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .compiler-toolbar {
+            background: var(--bg-secondary);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .language-select {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            min-width: 150px;
+            cursor: pointer;
+        }
+        
+        .language-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .editor-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: 500px;
+        }
+        
+        .editor-panel {
+            background: #1e1e1e;
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .editor-panel:last-child {
+            border-right: none;
+        }
+        
+        .editor-header {
+            background: #2d2d2d;
+            color: #999;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #404040;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        #code-editor, #output {
+            width: 100%;
+            height: calc(100% - 35px);
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: none;
+            overflow-y: auto;
+        }
+        
+        #code-editor:focus {
+            outline: none;
+        }
+        
+        .sample-section {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        
+        .sample-title {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .sample-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .sample-card {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .sample-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .sample-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+        
+        .sample-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .editor-area {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .editor-panel {
+                height: 300px;
+            }
+            
+            .compiler-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="container">
-            <a href="index.html" class="logo">CodeHub</a>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="compiler.html" class="active">Compiler</a>
-                <a href="converter.html">Converter</a>
-                <a href="blog.html">Blog</a>
-                <a href="about.html">About</a>
-                <a href="contact.html">Contact</a>
-                <a href="admin/index.html" class="admin-btn">Admin</a>
+            <a href="index.html" class="logo">
+                <i class="fas fa-code"></i>
+                CodeMaster
+            </a>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="compiler.html" class="active"><i class="fas fa-play"></i> Compiler</a></li>
+                <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
+                <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
+                <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                <li><a href="admin.html" class="admin-btn"><i class="fas fa-lock"></i> Admin</a></li>
+            </ul>
+            
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </nav>
 
-    <main class="container">
-        <h1>Online Code Compiler</h1>
-        
+    <main>
         <div class="compiler-container">
-            <div class="compiler-controls">
-                <div class="language-selector">
-                    <label for="language">Language:</label>
-                    <select id="language">
+            <div class="compiler-header">
+                <h1><i class="fas fa-play" style="color: var(--primary-color);"></i> Multi-Language Compiler</h1>
+                <p>Write, compile, and execute code in real-time. Supports 10+ programming languages.</p>
+            </div>
+
+            <div class="compiler-wrapper">
+                <div class="compiler-toolbar">
+                    <select id="language" class="language-select">
                         <option value="javascript">JavaScript</option>
                         <option value="python">Python</option>
                         <option value="java">Java</option>
                         <option value="cpp">C++</option>
                         <option value="c">C</option>
-                        <option value="php">PHP</option>
+                        <option value="csharp">C#</option>
                         <option value="go">Go</option>
                         <option value="rust">Rust</option>
-                        <option value="ruby">Ruby</option>
+                        <option value="php">PHP</option>
                         <option value="swift">Swift</option>
                     </select>
-                </div>
-                
-                <div class="code-actions">
-                    <button id="run-btn" class="btn btn-primary">
+                    
+                    <button class="btn btn-primary" onclick="runCode()">
                         <i class="fas fa-play"></i> Run Code
                     </button>
-                    <button id="clear-btn" class="btn btn-secondary">
-                        <i class="fas fa-trash"></i> Clear
+                    
+                    <button class="btn btn-outline" onclick="clearOutput()">
+                        <i class="fas fa-eraser"></i> Clear
                     </button>
+                </div>
+                
+                <div class="editor-area">
+                    <div class="editor-panel">
+                        <div class="editor-header">
+                            <span><i class="fas fa-code"></i> main.js</span>
+                        </div>
+                        <textarea id="code-editor">// Welcome to CodeMaster Compiler
+console.log("Hello, World!");
+
+// Function example
+function calculateSum(a, b) {
+    return a + b;
+}
+
+// Array operations
+const numbers = [1, 2, 3, 4, 5];
+const doubled = numbers.map(n => n * 2);
+
+console.log("Sum of 5 and 3:", calculateSum(5, 3));
+console.log("Doubled numbers:", doubled);</textarea>
+                    </div>
+                    <div class="editor-panel">
+                        <div class="editor-header">
+                            <span><i class="fas fa-terminal"></i> Output</span>
+                        </div>
+                        <div id="output">Click "Run Code" to see the output...</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="editor-section">
-                <div class="code-editor">
-                    <h3>Code Editor</h3>
-                    <textarea id="code-input" placeholder="Write your code here...">// Sample code based on selected language
-console.log("Hello, World!");</textarea>
-                </div>
-                
-                <div class="output-section">
-                    <h3>Output</h3>
-                    <div id="output"></div>
-                    <div id="loading" style="display: none;">
-                        <i class="fas fa-spinner fa-spin"></i> Running code...
+            <div class="sample-section">
+                <h3 class="sample-title"><i class="fas fa-book"></i> Sample Programs</h3>
+                <div class="sample-grid">
+                    <div class="sample-card" onclick="loadSample('fibonacci')">
+                        <h4>Fibonacci Series</h4>
+                        <p>Generate Fibonacci sequence using recursion</p>
+                    </div>
+                    <div class="sample-card" onclick="loadSample('sort')">
+                        <h4>Bubble Sort</h4>
+                        <p>Implementation of bubble sort algorithm</p>
+                    </div>
+                    <div class="sample-card" onclick="loadSample('palindrome')">
+                        <h4>Palindrome Check</h4>
+                        <p>Check if a string is a palindrome</p>
+                    </div>
+                    <div class="sample-card" onclick="loadSample('factorial')">
+                        <h4>Factorial</h4>
+                        <p>Calculate factorial using recursion</p>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
-    <script src="js/compiler.js"></script>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-code"></i> CodeMaster</h3>
+                    <p>Powerful online compiler and converter for developers, students, and educators.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-tools"></i> Tools</h3>
+                    <ul>
+                        <li><a href="compiler.html"><i class="fas fa-play"></i> Compiler</a></li>
+                        <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-link"></i> Quick Links</h3>
+                    <ul>
+                        <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
+                        <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-shield-alt"></i> Legal</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-lock"></i> Privacy Policy</a></li>
+                        <li><a href="#"><i class="fas fa-file-contract"></i> Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p><i class="fas fa-copyright"></i> 2026 CodeMaster. Made with <i class="fas fa-heart"></i> for developers</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            const icon = themeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-theme')) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
+            }
+        });
+
+        // Mobile menu
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        // Compiler functionality
+        const samples = {
+            fibonacci: `// Fibonacci Series
+function fibonacci(n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log("First 10 Fibonacci numbers:");
+for (let i = 0; i < 10; i++) {
+    console.log(\`F(\${i}) = \${fibonacci(i)}\`);
+}`,
+            sort: `// Bubble Sort Implementation
+function bubbleSort(arr) {
+    let n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+            }
+        }
+    }
+    return arr;
+}
+
+const numbers = [64, 34, 25, 12, 22, 11, 90];
+console.log("Original array:", numbers);
+console.log("Sorted array:", bubbleSort([...numbers]));`,
+            palindrome: `// Palindrome Checker
+function isPalindrome(str) {
+    const clean = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return clean === clean.split('').reverse().join('');
+}
+
+const testStrings = ["racecar", "hello", "A man, a plan, a canal: Panama"];
+testStrings.forEach(str => {
+    console.log(\`"\${str}" is \${isPalindrome(str) ? '' : 'not '}a palindrome\`);
+});`,
+            factorial: `// Factorial Calculator
+function factorial(n) {
+    if (n === 0 || n === 1) return 1;
+    return n * factorial(n - 1);
+}
+
+console.log("Factorial calculations:");
+for (let i = 0; i <= 10; i++) {
+    console.log(\`\${i}! = \${factorial(i)}\`);
+}`
+        };
+
+        function runCode() {
+            const code = document.getElementById('code-editor').value;
+            const output = document.getElementById('output');
+            
+            output.innerHTML = '';
+            
+            try {
+                const logs = [];
+                const customConsole = {
+                    log: (...args) => {
+                        logs.push(args.map(arg => 
+                            typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+                        ).join(' '));
+                    }
+                };
+                
+                const func = new Function('console', code);
+                func(customConsole);
+                
+                output.innerHTML = logs.join('<br>') || 'No output';
+            } catch (error) {
+                output.innerHTML = `<span style="color: var(--danger);">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        function clearOutput() {
+            document.getElementById('output').innerHTML = 'Output cleared...';
+        }
+
+        function loadSample(type) {
+            const editor = document.getElementById('code-editor');
+            if (samples[type]) {
+                editor.value = samples[type];
+            }
+        }
+    </script>
 </body>
-
 </html>
-
-
