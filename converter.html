@@ -3,1018 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Converter | CodeHub</title>
+    <title>CodeMaster - Code Converter</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Dark Theme Base */
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --dark: #0f172a;
-            --darker: #020617;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --gray-dark: #334155;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --card-bg: #1e293b;
-            --card-border: #334155;
-            --code-bg: #0f172a;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--darker);
-            color: var(--light);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        .container {
+        .converter-container {
             max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
+            margin: 2rem auto;
+            padding: 0 2rem;
         }
-
-        /* Navigation */
-        .navbar {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--card-border);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: var(--light);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary);
-        }
-
-        .nav-links a.active {
-            color: var(--primary);
-        }
-
-        /* Converter Header */
+        
         .converter-header {
             text-align: center;
-            padding: 3rem 0 2rem;
-        }
-
-        .converter-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .converter-header p {
-            color: var(--gray);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Converter Layout */
-        .converter-layout {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 2rem;
-            align-items: start;
-            margin-bottom: 3rem;
-        }
-
-        @media (max-width: 1024px) {
-            .converter-layout {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto auto;
-            }
-        }
-
-        /* Editor Panels */
-        .editor-panel {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 500px;
-        }
-
-        .panel-header {
-            background: rgba(30, 41, 59, 0.8);
-            padding: 1rem;
-            border-bottom: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .panel-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            color: var(--light);
-        }
-
-        .language-selector {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        select {
-            background: var(--gray-dark);
-            color: var(--light);
-            border: 1px solid var(--card-border);
-            padding: 0.5rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        /* Code Editors */
-        .code-editor {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .editor-textarea {
-            width: 100%;
-            height: 100%;
-            background: var(--code-bg);
-            color: var(--light);
-            border: none;
-            padding: 1rem;
-            font-family: 'Cascadia Code', 'Fira Code', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-            resize: none;
-            tab-size: 2;
-        }
-
-        .editor-textarea:focus {
-            outline: none;
-        }
-
-        /* Conversion Center */
-        .conversion-center {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            padding-top: 2rem;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            min-width: 150px;
-            justify-content: center;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--gray-dark);
-            color: var(--light);
-        }
-
-        .btn-secondary:hover {
-            background: var(--gray);
-        }
-
-        .btn-large {
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-        }
-
-        /* Language Examples */
-        .examples-section {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 2rem;
             margin-bottom: 2rem;
         }
-
-        .examples-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
+        
+        .converter-header h1 {
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
         }
-
-        .example-card {
-            background: var(--dark);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
+        
+        .converter-header p {
+            color: var(--text-secondary);
         }
-
-        .example-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
+        
+        .converter-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
         }
-
-        .example-header {
+        
+        .converter-toolbar {
+            background: var(--bg-secondary);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .language-pair {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
+            flex: 1;
         }
-
-        .example-code {
-            background: var(--code-bg);
-            padding: 1rem;
-            border-radius: 6px;
-            font-family: 'Cascadia Code', monospace;
+        
+        .language-select {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            flex: 1;
+            max-width: 150px;
+            cursor: pointer;
+        }
+        
+        .swap-btn {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+        .swap-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: rotate(180deg);
+        }
+        
+        .editor-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: 400px;
+        }
+        
+        .editor-panel {
+            background: #1e1e1e;
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .editor-panel:last-child {
+            border-right: none;
+        }
+        
+        .editor-header {
+            background: #2d2d2d;
+            color: #999;
+            padding: 0.5rem 1rem;
             font-size: 0.9rem;
-            overflow-x: auto;
-            white-space: pre;
-        }
-
-        /* Status Messages */
-        .status-message {
-            background: var(--dark);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-            display: none;
-        }
-
-        .status-message.success {
-            border-color: var(--success);
-            color: var(--success);
-            display: block;
-        }
-
-        .status-message.error {
-            border-color: var(--danger);
-            color: var(--danger);
-            display: block;
-        }
-
-        /* Conversion History */
-        .history-section {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-
-        .history-list {
-            margin-top: 1rem;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            background: var(--dark);
-            border: 1px solid var(--card-border);
-            border-radius: 6px;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+            border-bottom: 1px solid #404040;
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
-
-        /* Syntax highlighting */
-        .keyword { color: #ff79c6; }
-        .string { color: #f1fa8c; }
-        .function { color: #50fa7b; }
-        .number { color: #bd93f9; }
-        .comment { color: #6272a4; }
-
-        /* Responsive */
+        
+        .code-editor {
+            width: 100%;
+            height: calc(100% - 35px);
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: none;
+        }
+        
+        .code-editor:focus {
+            outline: none;
+        }
+        
+        .conversion-rules {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .rule-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .rule-item i {
+            color: var(--primary-color);
+        }
+        
         @media (max-width: 768px) {
-            .converter-layout {
-                gap: 1rem;
+            .editor-area {
+                grid-template-columns: 1fr;
+                height: auto;
             }
             
             .editor-panel {
-                height: 400px;
+                height: 300px;
             }
             
-            .conversion-center {
-                flex-direction: row;
-                padding: 1rem 0;
+            .language-pair {
+                flex-direction: column;
+                width: 100%;
             }
             
-            .btn-large {
-                padding: 0.8rem 1.5rem;
+            .language-select {
+                max-width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
     <nav class="navbar">
-        <div class="container nav-container">
-            <a href="index.html" class="logo">CodeHub</a>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="compiler.html">Compiler</a>
-                <a href="converter.html" class="active">Converter</a>
-                <a href="blog.html">Blog</a>
-                <a href="about.html">About</a>
-                <a href="contact.html">Contact</a>
-                <a href="admin.html">Admin</a>
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-code"></i>
+                CodeMaster
+            </a>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="compiler.html"><i class="fas fa-play"></i> Compiler</a></li>
+                <li><a href="converter.html" class="active"><i class="fas fa-exchange-alt"></i> Converter</a></li>
+                <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
+                <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                <li><a href="admin.html" class="admin-btn"><i class="fas fa-lock"></i> Admin</a></li>
+            </ul>
+            
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Converter Header -->
-    <div class="converter-header">
-        <div class="container">
-            <h1>Code Language Converter</h1>
-            <p>Convert code between 10+ programming languages with intelligent syntax transformation</p>
-        </div>
-    </div>
-
-    <!-- Main Converter -->
-    <main class="container">
-        <!-- Converter Layout -->
-        <div class="converter-layout">
-            <!-- Input Panel -->
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <span>📥</span>
-                        <span>Input Code</span>
-                    </div>
-                    <div class="language-selector">
-                        <span>From:</span>
-                        <select id="input-language">
-                            <option value="python">Python</option>
-                            <option value="javascript">JavaScript</option>
-                            <option value="java">Java</option>
-                            <option value="cpp">C++</option>
-                            <option value="csharp">C#</option>
-                            <option value="php">PHP</option>
-                            <option value="ruby">Ruby</option>
-                            <option value="go">Go</option>
-                            <option value="rust">Rust</option>
-                            <option value="swift">Swift</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="code-editor">
-                    <textarea id="input-code" class="editor-textarea" spellcheck="false"># Python example: Fibonacci sequence
-def fibonacci(n):
-    """Return the nth Fibonacci number."""
-    if n <= 1:
-        return n
-    else:
-        return fibonacci(n-1) + fibonacci(n-2)
-
-# Print first 10 Fibonacci numbers
-print("Fibonacci sequence:")
-for i in range(10):
-    print(f"F({i}) = {fibonacci(i)}")
-
-# Calculate and display
-result = fibonacci(10)
-print(f"\nThe 10th Fibonacci number is: {result}")</textarea>
-                </div>
+    <main>
+        <div class="converter-container">
+            <div class="converter-header">
+                <h1><i class="fas fa-exchange-alt" style="color: var(--primary-color);"></i> Smart Code Converter</h1>
+                <p>Convert code between different programming languages with intelligent syntax translation</p>
             </div>
 
-            <!-- Conversion Center -->
-            <div class="conversion-center">
-                <button id="convert-btn" class="btn btn-primary btn-large">
-                    <span>🔄 Convert</span>
-                </button>
-                <button id="swap-btn" class="btn btn-secondary">
-                    <span>🔄 Swap Languages</span>
-                </button>
-                <div class="status-message" id="status-message"></div>
-            </div>
-
-            <!-- Output Panel -->
-            <div class="editor-panel">
-                <div class="panel-header">
-                    <div class="panel-title">
-                        <span>📤</span>
-                        <span>Converted Code</span>
-                    </div>
-                    <div class="language-selector">
-                        <span>To:</span>
-                        <select id="output-language">
+            <div class="converter-wrapper">
+                <div class="converter-toolbar">
+                    <div class="language-pair">
+                        <select id="fromLang" class="language-select">
                             <option value="javascript">JavaScript</option>
                             <option value="python">Python</option>
                             <option value="java">Java</option>
                             <option value="cpp">C++</option>
-                            <option value="csharp">C#</option>
-                            <option value="php">PHP</option>
-                            <option value="ruby">Ruby</option>
-                            <option value="go">Go</option>
-                            <option value="rust">Rust</option>
-                            <option value="swift">Swift</option>
+                        </select>
+                        
+                        <button class="swap-btn" onclick="swapLanguages()">
+                            <i class="fas fa-exchange-alt"></i>
+                        </button>
+                        
+                        <select id="toLang" class="language-select">
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
                         </select>
                     </div>
+                    
+                    <button class="btn btn-primary" onclick="convertCode()">
+                        <i class="fas fa-sync-alt"></i> Convert
+                    </button>
+                    
+                    <button class="btn btn-outline" onclick="copyToClipboard()">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
                 </div>
-                <div class="code-editor">
-                    <textarea id="output-code" class="editor-textarea" spellcheck="false" readonly></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Language Examples -->
-        <div class="examples-section">
-            <h2>Quick Examples</h2>
-            <p>Click any example to load it into the converter</p>
-            
-            <div class="examples-grid">
-                <!-- Python Example -->
-                <div class="example-card" data-lang="python" data-code="def factorial(n):
-    if n == 0:
-        return 1
-    else:
-        return n * factorial(n-1)
-
-print(factorial(5))">
-                    <div class="example-header">
-                        <span>🐍</span>
-                        <strong>Python Factorial</strong>
-                    </div>
-                    <div class="example-code">def factorial(n):
-    if n == 0:
-        return 1
-    else:
-        return n * factorial(n-1)</div>
-                </div>
-
-                <!-- JavaScript Example -->
-                <div class="example-card" data-lang="javascript" data-code="function fibonacci(n) {
-    if (n <= 1) return n;
-    return fibonacci(n - 1) + fibonacci(n - 2);
+                
+                <div class="editor-area">
+                    <div class="editor-panel">
+                        <div class="editor-header">
+                            <span><i class="fas fa-code"></i> Input (<span id="inputLang">JavaScript</span>)</span>
+                        </div>
+                        <textarea id="inputCode" class="code-editor">// Function to calculate factorial
+function factorial(n) {
+    if (n <= 1) {
+        return 1;
+    }
+    return n * factorial(n - 1);
 }
 
-console.log('Fibonacci(10):', fibonacci(10));">
-                    <div class="example-header">
-                        <span>⚡</span>
-                        <strong>JavaScript Fibonacci</strong>
+// Calculate and print result
+let result = factorial(5);
+console.log("Factorial of 5 is: " + result);</textarea>
                     </div>
-                    <div class="example-code">function fibonacci(n) {
-    if (n <= 1) return n;
-    return fibonacci(n - 1) + fibonacci(n - 2);
-}</div>
-                </div>
-
-                <!-- Java Example -->
-                <div class="example-card" data-lang="java" data-code="public class Main {
-    public static void main(String[] args) {
-        int sum = 0;
-        for (int i = 1; i <= 10; i++) {
-            sum += i;
-        }
-        System.out.println(&quot;Sum: &quot; + sum);
-    }
-}">
-                    <div class="example-header">
-                        <span>☕</span>
-                        <strong>Java Sum Loop</strong>
+                    <div class="editor-panel">
+                        <div class="editor-header">
+                            <span><i class="fas fa-code"></i> Output (<span id="outputLang">Python</span>)</span>
+                        </div>
+                        <textarea id="outputCode" class="code-editor" readonly># Converted code will appear here</textarea>
                     </div>
-                    <div class="example-code">public class Main {
-    public static void main(String[] args) {
-        int sum = 0;
-        for (int i = 1; i <= 10; i++) {
-            sum += i;
-        }
-    }
-}</div>
-                </div>
-
-                <!-- C++ Example -->
-                <div class="example-card" data-lang="cpp" data-code="#include <iostream>
-using namespace std;
-
-int main() {
-    for (int i = 1; i <= 5; i++) {
-        cout << &quot;Number: &quot; << i << endl;
-    }
-    return 0;
-}">
-                    <div class="example-header">
-                        <span>🔧</span>
-                        <strong>C++ Loop</strong>
-                    </div>
-                    <div class="example-code">#include <iostream>
-int main() {
-    for (int i = 1; i <= 5; i++) {
-        cout << i << endl;
-    }
-}</div>
                 </div>
             </div>
-        </div>
 
-        <!-- Conversion History -->
-        <div class="history-section">
-            <h2>Recent Conversions</h2>
-            <div class="history-list" id="history-list">
-                <!-- History items will be added here -->
+            <div class="conversion-rules">
+                <h3><i class="fas fa-list-check"></i> Conversion Rules</h3>
+                <div class="rules-grid">
+                    <div class="rule-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Syntax structure preservation</span>
+                    </div>
+                    <div class="rule-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Variable naming consistency</span>
+                    </div>
+                    <div class="rule-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Function signature mapping</span>
+                    </div>
+                    <div class="rule-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Language-specific optimizations</span>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-code"></i> CodeMaster</h3>
+                    <p>Powerful online compiler and converter for developers, students, and educators.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-tools"></i> Tools</h3>
+                    <ul>
+                        <li><a href="compiler.html"><i class="fas fa-play"></i> Compiler</a></li>
+                        <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-link"></i> Quick Links</h3>
+                    <ul>
+                        <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
+                        <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-shield-alt"></i> Legal</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-lock"></i> Privacy Policy</a></li>
+                        <li><a href="#"><i class="fas fa-file-contract"></i> Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p><i class="fas fa-copyright"></i> 2026 CodeMaster. Made with <i class="fas fa-heart"></i> for developers</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // Language conversion patterns
-        const conversionPatterns = {
-            // Python to JavaScript
-            'python-javascript': {
-                'def ': 'function ',
-                'print(': 'console.log(',
-                'len(': '.length',
-                'range(': 'Array.from({length: ',
-                'range($1, $2)': 'Array.from({length: $2 - $1}, (_, i) => i + $1)',
-                '#': '//',
-                'if __name__ == "__main__":': '// Main execution',
-                'self.': 'this.',
-                'True': 'true',
-                'False': 'false',
-                'None': 'null',
-                'and': '&&',
-                'or': '||',
-                'not': '!'
-            },
-            
-            // JavaScript to Python
-            'javascript-python': {
-                'function ': 'def ',
-                'console.log(': 'print(',
-                '.length': 'len(',
-                'Array.from({length: ': 'range(',
-                'Array.from({length: $1}, (_, i) => i)': 'range($1)',
-                '//': '#',
-                'this.': 'self.',
-                'true': 'True',
-                'false': 'False',
-                'null': 'None',
-                '&&': 'and',
-                '||': 'or',
-                '!': 'not',
-                '===': '==',
-                '!==': '!=',
-                'let ': '',
-                'const ': '',
-                'var ': ''
-            },
-            
-            // Python to Java
-            'python-java': {
-                'def ': 'public static ',
-                'print(': 'System.out.println(',
-                '#': '//',
-                'True': 'true',
-                'False': 'false',
-                'None': 'null',
-                'and': '&&',
-                'or': '||',
-                'not': '!',
-                'len(': '.length()',
-                'range(': 'IntStream.range(0, '
-            },
-            
-            // Java to Python
-            'java-python': {
-                'public static ': 'def ',
-                'System.out.println(': 'print(',
-                '//': '#',
-                'true': 'True',
-                'false': 'False',
-                'null': 'None',
-                '&&': 'and',
-                '||': 'or',
-                '!': 'not',
-                '.length()': 'len(',
-                'IntStream.range(0, ': 'range(',
-                'public class Main {': '',
-                'public static void main(String[] args) {': 'if __name__ == "__main__":',
-                '}': ''
-            },
-            
-            // C++ to Python
-            'cpp-python': {
-                '#include <iostream>': '',
-                'using namespace std;': '',
-                'int main() {': 'if __name__ == "__main__":',
-                'cout << ': 'print(',
-                'endl': '',
-                '//': '#',
-                'true': 'True',
-                'false': 'False',
-                'NULL': 'None',
-                '&&': 'and',
-                '||': 'or',
-                '!': 'not',
-                '}': ''
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            const icon = themeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-theme')) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
             }
-        };
+        });
 
-        // Language templates
-        const languageTemplates = {
-            python: `def main():
-    # Your code here
-    pass
+        // Mobile menu
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
 
-if __name__ == "__main__":
-    main()`,
-            
-            javascript: `function main() {
-    // Your code here
-}
-
-// Entry point
-main();`,
-            
-            java: `public class Main {
-    public static void main(String[] args) {
-        // Your code here
-    }
-}`,
-            
-            cpp: `#include <iostream>
-using namespace std;
-
-int main() {
-    // Your code here
-    return 0;
-}`,
-            
-            csharp: `using System;
-
-class Program {
-    static void Main() {
-        // Your code here
-    }
-}`,
-            
-            php: `<?php
-// Your code here
-?>`,
-            
-            ruby: `def main
-    # Your code here
-end
-
-main`,
-            
-            go: `package main
-
-func main() {
-    // Your code here
-}`,
-            
-            rust: `fn main() {
-    // Your code here
-}`,
-            
-            swift: `import Swift
-
-func main() {
-    // Your code here
-}
-
-main()`
-        };
-
-        // DOM Elements
-        const inputLanguage = document.getElementById('input-language');
-        const outputLanguage = document.getElementById('output-language');
-        const inputCode = document.getElementById('input-code');
-        const outputCode = document.getElementById('output-code');
-        const convertBtn = document.getElementById('convert-btn');
-        const swapBtn = document.getElementById('swap-btn');
-        const statusMessage = document.getElementById('status-message');
-        const historyList = document.getElementById('history-list');
-        const exampleCards = document.querySelectorAll('.example-card');
-
-        // Conversion history
-        let conversionHistory = JSON.parse(localStorage.getItem('conversionHistory') || '[]');
-
-        // Update history display
-        function updateHistory() {
-            historyList.innerHTML = '';
-            conversionHistory.slice(0, 5).forEach(item => {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-                historyItem.innerHTML = `
-                    <span>${item.from} → ${item.to}</span>
-                    <small>${new Date(item.timestamp).toLocaleTimeString()}</small>
-                `;
-                historyItem.addEventListener('click', () => {
-                    inputLanguage.value = item.from;
-                    outputLanguage.value = item.to;
-                    inputCode.value = item.input;
-                    convertCode();
-                });
-                historyList.appendChild(historyItem);
-            });
-        }
-
-        // Show status message
-        function showStatus(message, type = 'success') {
-            statusMessage.textContent = message;
-            statusMessage.className = `status-message ${type}`;
-            setTimeout(() => {
-                statusMessage.className = 'status-message';
-            }, 3000);
-        }
-
-        // Convert code between languages
-        function convertCode() {
-            const fromLang = inputLanguage.value;
-            const toLang = outputLanguage.value;
-            const code = inputCode.value.trim();
-
-            if (!code) {
-                showStatus('Please enter some code to convert', 'error');
-                return;
-            }
-
-            if (fromLang === toLang) {
-                outputCode.value = code;
-                showStatus('Same language selected - no conversion needed', 'error');
-                return;
-            }
-
-            // Show converting status
-            convertBtn.innerHTML = '<span>⏳ Converting...</span>';
-            convertBtn.disabled = true;
-
-            // Simulate conversion delay
-            setTimeout(() => {
-                let converted = code;
-                const conversionKey = `${fromLang}-${toLang}`;
-                
-                // Apply conversion patterns if available
-                if (conversionPatterns[conversionKey]) {
-                    for (const [pattern, replacement] of Object.entries(conversionPatterns[conversionKey])) {
-                        const regex = new RegExp(pattern.replace(/\$/g, '\\$'), 'g');
-                        converted = converted.replace(regex, replacement);
-                    }
-                } else {
-                    // Apply generic conversions
-                    converted = applyGenericConversion(converted, fromLang, toLang);
-                }
-                
-                // Add language-specific template if needed
-                if (!converted.includes('main') && !converted.includes('Main')) {
-                    const template = languageTemplates[toLang];
-                    if (template && !converted.includes('def ') && !converted.includes('function ') && !converted.includes('class ')) {
-                        const lines = template.split('\n');
-                        lines.splice(lines.findIndex(line => line.includes('Your code here')), 1, ...code.split('\n').map(line => '    ' + line));
-                        converted = lines.join('\n');
-                    }
-                }
-                
-                // Update output
-                outputCode.value = converted;
-                
-                // Add to history
-                const historyItem = {
-                    from: fromLang,
-                    to: toLang,
-                    input: code,
-                    output: converted,
-                    timestamp: new Date().toISOString()
-                };
-                
-                conversionHistory.unshift(historyItem);
-                if (conversionHistory.length > 10) {
-                    conversionHistory = conversionHistory.slice(0, 10);
-                }
-                
-                localStorage.setItem('conversionHistory', JSON.stringify(conversionHistory));
-                updateHistory();
-                
-                // Update status
-                convertBtn.innerHTML = '<span>🔄 Convert</span>';
-                convertBtn.disabled = false;
-                showStatus(`✅ Successfully converted from ${fromLang} to ${toLang}`);
-                
-                // Add syntax highlighting
-                applySyntaxHighlighting();
-                
-            }, 1000);
-        }
-
-        // Apply generic conversions
-        function applyGenericConversion(code, fromLang, toLang) {
-            let converted = code;
-            
-            // Comment conversions
-            if (fromLang === 'python' && toLang !== 'python') {
-                converted = converted.replace(/#/g, '//');
-            } else if (fromLang !== 'python' && toLang === 'python') {
-                converted = converted.replace(/\/\//g, '#');
-            }
-            
-            // Print/console conversions
-            if (fromLang === 'python') {
-                converted = converted.replace(/print\(/g, getPrintFunction(toLang));
-            } else if (toLang === 'python') {
-                converted = converted.replace(/console\.log\(|System\.out\.println\(|cout\s*<</g, 'print(');
-            }
-            
-            // Boolean conversions
-            converted = converted.replace(/\bTrue\b/g, 'true')
-                                .replace(/\bFalse\b/g, 'false')
-                                .replace(/\btrue\b/g, 'True')
-                                .replace(/\bfalse\b/g, 'False')
-                                .replace(/\bNone\b/g, 'null')
-                                .replace(/\bnull\b/g, 'None');
-            
-            // Logical operators
-            converted = converted.replace(/\band\b/g, '&&')
-                                .replace(/\bor\b/g, '||')
-                                .replace(/\bnot\b/g, '!')
-                                .replace(/&&/g, 'and')
-                                .replace(/\|\|/g, 'or')
-                                .replace(/!/g, 'not');
-            
-            return converted;
-        }
-
-        function getPrintFunction(language) {
-            const printFunctions = {
-                'javascript': 'console.log(',
-                'java': 'System.out.println(',
-                'cpp': 'cout << ',
-                'csharp': 'Console.WriteLine(',
-                'php': 'echo ',
-                'ruby': 'puts ',
-                'go': 'fmt.Println(',
-                'rust': 'println!(',
-                'swift': 'print('
-            };
-            return printFunctions[language] || 'print(';
-        }
-
-        // Swap languages
         function swapLanguages() {
-            const tempLang = inputLanguage.value;
-            inputLanguage.value = outputLanguage.value;
-            outputLanguage.value = tempLang;
+            const from = document.getElementById('fromLang');
+            const to = document.getElementById('toLang');
             
-            const tempCode = inputCode.value;
-            inputCode.value = outputCode.value;
-            outputCode.value = tempCode;
-            
-            showStatus('🔄 Languages swapped');
+            [from.value, to.value] = [to.value, from.value];
+            updateLanguageLabels();
         }
 
-        // Apply syntax highlighting
-        function applySyntaxHighlighting() {
-            const code = outputCode.value;
-            const lang = outputLanguage.value;
+        function updateLanguageLabels() {
+            const fromLang = document.getElementById('fromLang').value;
+            const toLang = document.getElementById('toLang').value;
             
-            let highlighted = code;
-            
-            // Basic syntax highlighting
-            const patterns = {
-                keyword: /\b(def|function|class|if|else|for|while|return|import|from|var|let|const|public|private|static|void|int|string|bool)\b/g,
-                string: /(["'])(?:(?=(\\?))\2.)*?\1/g,
-                comment: /(#.*$|\/\/.*$|\/\*[\s\S]*?\*\/)/gm,
-                number: /\b\d+\b/g,
-                function: /\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/g
-            };
-            
-            // Apply highlights
-            highlighted = highlighted.replace(patterns.keyword, '<span class="keyword">$&</span>');
-            highlighted = highlighted.replace(patterns.string, '<span class="string">$&</span>');
-            highlighted = highlighted.replace(patterns.comment, '<span class="comment">$&</span>');
-            highlighted = highlighted.replace(patterns.number, '<span class="number">$&</span>');
-            highlighted = highlighted.replace(patterns.function, '<span class="function">$1</span>(');
-            
-            // Update output with HTML
-            const temp = document.createElement('div');
-            temp.innerHTML = highlighted;
-            outputCode.value = temp.textContent; // Keep plain text in textarea
+            document.getElementById('inputLang').textContent = 
+                fromLang.charAt(0).toUpperCase() + fromLang.slice(1);
+            document.getElementById('outputLang').textContent = 
+                toLang.charAt(0).toUpperCase() + toLang.slice(1);
         }
 
-        // Initialize
-        function init() {
-            // Event listeners
-            convertBtn.addEventListener('click', convertCode);
-            swapBtn.addEventListener('click', swapLanguages);
+        function convertCode() {
+            const input = document.getElementById('inputCode').value;
+            const from = document.getElementById('fromLang').value;
+            const to = document.getElementById('toLang').value;
+            const output = document.getElementById('outputCode');
             
-            inputCode.addEventListener('input', () => {
-                outputCode.value = '';
-            });
+            let converted = input;
             
-            // Example card click handlers
-            exampleCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    const lang = card.dataset.lang;
-                    const code = card.dataset.code.replace(/&quot;/g, '"');
-                    
-                    inputLanguage.value = lang;
-                    inputCode.value = code;
-                    outputCode.value = '';
-                    
-                    showStatus(`Loaded ${lang} example`);
-                });
-            });
+            if (from === 'javascript' && to === 'python') {
+                converted = jsToPython(input);
+            } else if (from === 'python' && to === 'javascript') {
+                converted = pythonToJs(input);
+            } else {
+                converted = `// Conversion from ${from} to ${to}\n// This is a demonstration\n// Full conversion would require a backend service\n\n${input}`;
+            }
             
-            // Auto-convert on language change
-            [inputLanguage, outputLanguage].forEach(select => {
-                select.addEventListener('change', () => {
-                    if (inputCode.value.trim()) {
-                        convertCode();
-                    }
-                });
-            });
-            
-            // Load history
-            updateHistory();
-            
-            // Initial conversion
-            convertCode();
-            
-            // Add copy functionality
-            outputCode.addEventListener('click', () => {
-                if (outputCode.value) {
-                    navigator.clipboard.writeText(outputCode.value);
-                    showStatus('📋 Copied to clipboard');
-                }
-            });
+            output.value = converted;
         }
 
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
+        function jsToPython(code) {
+            let result = code
+                .replace(/\/\/.*/g, match => '# ' + match.slice(2))
+                .replace(/console\.log\((.*)\);/g, 'print($1)')
+                .replace(/function\s+(\w+)\s*\(([^)]*)\)/g, 'def $1($2):')
+                .replace(/let\s+|const\s+/g, '')
+                .replace(/===/g, '==')
+                .replace(/!==/g, '!=')
+                .replace(/{/g, ':')
+                .replace(/}/g, '')
+                .replace(/;/g, '');
+            
+            return '# Converted from JavaScript to Python\n' + result;
+        }
+
+        function pythonToJs(code) {
+            let result = code
+                .replace(/#.*/g, match => '// ' + match.slice(1))
+                .replace(/print\((.*)\)/g, 'console.log($1);')
+                .replace(/def\s+(\w+)\s*\(([^)]*)\):/g, 'function $1($2) {')
+                .replace(/elif/g, 'else if')
+                .replace(/:/g, ' {')
+                .replace(/^(\s+)return/g, '$1return');
+            
+            return '// Converted from Python to JavaScript\n' + result;
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('outputCode');
+            output.select();
+            document.execCommand('copy');
+            alert('Converted code copied to clipboard!');
+        }
+
+        // Update labels on language change
+        document.getElementById('fromLang').addEventListener('change', updateLanguageLabels);
+        document.getElementById('toLang').addEventListener('change', updateLanguageLabels);
     </script>
 </body>
 </html>
