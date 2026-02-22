@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMaster - Blog</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .blog-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .blog-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .blog-header h1 {
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .blog-header p {
+            color: var(--text-secondary);
+        }
+        
+        .featured-post {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .featured-image {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+        }
+        
+        .featured-content {
+            padding: 2rem;
+        }
+        
+        .post-category {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .featured-content h2 {
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .post-meta {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .post-meta i {
+            margin-right: 0.3rem;
+            color: var(--primary-color);
+        }
+        
+        .post-excerpt {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .blog-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .card-image {
+            height: 180px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .card-content h3 {
+            color: var(--text-primary);
+            margin: 0.5rem 0;
+            font-size: 1.2rem;
+        }
+        
+        .card-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .read-more {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .read-more:hover {
+            gap: 0.8rem;
+        }
+        
+        .categories-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .categories-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+        
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .tag {
+            padding: 0.5rem 1.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .tag:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .newsletter {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 3rem 0;
+        }
+        
+        .newsletter h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .newsletter p {
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+        
+        .newsletter-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .newsletter-input {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+        
+        .newsletter-input:focus {
+            outline: 2px solid white;
+        }
+        
+        @media (max-width: 768px) {
+            .featured-post {
+                grid-template-columns: 1fr;
+            }
+            
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .newsletter-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-code"></i>
+                CodeMaster
+            </a>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="compiler.html"><i class="fas fa-play"></i> Compiler</a></li>
+                <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
+                <li><a href="blog.html" class="active"><i class="fas fa-blog"></i> Blog</a></li>
+                <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                <li><a href="admin.html" class="admin-btn"><i class="fas fa-lock"></i> Admin</a></li>
+            </ul>
+            
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="blog-container">
+            <div class="blog-header">
+                <h1><i class="fas fa-blog" style="color: var(--primary-color);"></i> CodeMaster Blog</h1>
+                <p>Insights, tutorials, and news from the world of development</p>
+            </div>
+
+            <article class="featured-post">
+                <div class="featured-image">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="featured-content">
+                    <span class="post-category">Featured</span>
+                    <h2>The Future of Web Development: AI-Powered Tools</h2>
+                    <div class="post-meta">
+                        <i class="fas fa-user"></i> Sarah Johnson • 
+                        <i class="fas fa-calendar"></i> Feb 22, 2026 • 
+                        <i class="fas fa-clock"></i> 8 min read
+                    </div>
+                    <p class="post-excerpt">Explore how artificial intelligence is revolutionizing the way we build web applications. From intelligent code completion to automated testing, discover the tools that are shaping the future of development and how you can leverage them in your projects.</p>
+                    <a href="#" class="read-more">Read Full Article <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </article>
+
+            <div class="blog-grid">
+                <article class="blog-card">
+                    <div class="card-image">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <div class="card-content">
+                        <span class="post-category">Programming</span>
+                        <h3>Getting Started with Python</h3>
+                        <div class="post-meta">
+                            <i class="fas fa-calendar"></i> Feb 20, 2026 • 
+                            <i class="fas fa-clock"></i> 5 min read
+                        </div>
+                        <p>A comprehensive guide to Python programming for beginners. Learn syntax, data structures, and build your first application with practical examples.</p>
+                        <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="card-image">
+                        <i class="fab fa-react"></i>
+                    </div>
+                    <div class="card-content">
+                        <span class="post-category">Web Dev</span>
+                        <h3>React 19: What's New?</h3>
+                        <div class="post-meta">
+                            <i class="fas fa-calendar"></i> Feb 18, 2026 • 
+                            <i class="fas fa-clock"></i> 6 min read
+                        </div>
+                        <p>Explore the latest features in React 19 including server components, improved hooks, performance optimizations, and the new compiler.</p>
+                        <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="card-image">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="card-content">
+                        <span class="post-category">AI/ML</span>
+                        <h3>Machine Learning for Beginners</h3>
+                        <div class="post-meta">
+                            <i class="fas fa-calendar"></i> Feb 15, 2026 • 
+                            <i class="fas fa-clock"></i> 7 min read
+                        </div>
+                        <p>Understand the fundamentals of machine learning and how to implement simple models using Python and popular libraries like scikit-learn.</p>
+                        <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="card-image">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <span class="post-category">Mobile</span>
+                        <h3>Cross-Platform Development</h3>
+                        <div class="post-meta">
+                            <i class="fas fa-calendar"></i> Feb 12, 2026 • 
+                            <i class="fas fa-clock"></i> 4 min read
+                        </div>
+                        <p>Compare React Native, Flutter, and other frameworks for building mobile apps efficiently. Learn pros, cons, and when to use each.</p>
+                        <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="card-image">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <span class="post-category">Security</span>
+                        <h3>Web Security Best Practices</h3>
+                        <div class="post-meta">
+                            <i class="fas fa-calendar"></i> Feb 10, 2026 • 
+                            <i class="fas fa-clock"></i> 5 min read
+                        </div>
+                        <p>Essential security practices every developer should implement to protect applications from common vulnerabilities and attacks.</p>
+                        <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="card-image">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <span class="post-category">Performance</span>
+                        <h3>Optimizing Web Performance</h3>
+                        <div class="post-meta">
+                            <i class="fas fa-calendar"></i> Feb 8, 2026 • 
+                            <i class="fas fa-clock"></i> 6 min read
+                        </div>
+                        <p>Tips and techniques to make your websites faster and more responsive, from image optimization to code splitting and caching strategies.</p>
+                        <a href="#" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+            </div>
+
+            <div class="categories-section">
+                <h3 class="categories-title"><i class="fas fa-tags"></i> Browse by Category</h3>
+                <div class="category-tags">
+                    <a href="#" class="tag">JavaScript</a>
+                    <a href="#" class="tag">Python</a>
+                    <a href="#" class="tag">React</a>
+                    <a href="#" class="tag">Node.js</a>
+                    <a href="#" class="tag">AI/ML</a>
+                    <a href="#" class="tag">Web Design</a>
+                    <a href="#" class="tag">DevOps</a>
+                    <a href="#" class="tag">Database</a>
+                    <a href="#" class="tag">Security</a>
+                    <a href="#" class="tag">Mobile</a>
+                    <a href="#" class="tag">Career</a>
+                    <a href="#" class="tag">Tutorials</a>
+                </div>
+            </div>
+
+            <div class="newsletter">
+                <h3><i class="fas fa-envelope-open-text"></i> Stay Updated</h3>
+                <p>Get the latest articles and tutorials delivered straight to your inbox</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thanks for subscribing!');">
+                    <input type="email" placeholder="Enter your email" class="newsletter-input" required>
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-code"></i> CodeMaster</h3>
+                    <p>Powerful online compiler and converter for developers, students, and educators.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-tools"></i> Tools</h3>
+                    <ul>
+                        <li><a href="compiler.html"><i class="fas fa-play"></i> Compiler</a></li>
+                        <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-link"></i> Quick Links</h3>
+                    <ul>
+                        <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
+                        <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-shield-alt"></i> Legal</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-lock"></i> Privacy Policy</a></li>
+                        <li><a href="#"><i class="fas fa-file-contract"></i> Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p><i class="fas fa-copyright"></i> 2026 CodeMaster. Made with <i class="fas fa-heart"></i> for developers</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            const icon = themeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-theme')) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
+            }
+        });
+
+        // Mobile menu
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
