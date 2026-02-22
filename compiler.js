@@ -1,68 +1,59 @@
-// compiler.js - Enhanced CodeMaster Compiler with Server Integration
+// compiler.js - CodeMaster Compiler with Server Integration
 
-class CodeCompiler {
+class CodeMasterCompiler {
     constructor() {
-        this.editor = null;
         this.currentLanguage = 'javascript';
         this.output = [];
         this.history = [];
         this.theme = localStorage.getItem('codemaster_theme') || 'dark';
-        this.serverUrl = process.env.NODE_ENV === 'production' 
-            ? '/api' 
-            : 'http://localhost:3000/api';
+        this.serverUrl = this.getServerUrl();
+        this.savedCodes = [];
+        this.executionCount = 0;
+        this.isRunning = false;
         
         this.init();
     }
 
+    getServerUrl() {
+        // Check if we're running on GitHub Pages or local
+        if (window.location.hostname.includes('github.io')) {
+            return 'https://your-backend-server.com/api'; // Replace with your actual backend URL
+        }
+        return 'http://localhost:3000/api';
+    }
+
     async init() {
         this.cacheElements();
-        this.initEditor();
         this.initEventListeners();
-        this.loadSampleCode();
+        this.loadLanguageTemplates();
         this.loadHistory();
+        this.loadSavedCodes();
         this.initTheme();
         this.checkServerConnection();
+        this.updateLineNumbers();
+        this.loadAutoSave();
     }
 
     cacheElements() {
-        this.editorElement = document.getElementById('code-editor');
+        this.editor = document.getElementById('code-editor');
         this.outputElement = document.getElementById('output');
         this.languageSelect = document.getElementById('language');
-        this.runButton = document.getElementById('run-code');
-        this.clearButton = document.getElementById('clear-output');
-        this.saveButton = document.getElementById('save-code');
-        this.loadButton = document.getElementById('load-code');
-        this.shareButton = document.getElementById('share-code');
-        this.downloadButton = document.getElementById('download-code');
+        this.runBtn = document.getElementById('run-code');
+        this.clearBtn = document.getElementById('clear-output');
+        this.saveBtn = document.getElementById('save-code');
+        this.loadBtn = document.getElementById('load-code');
+        this.shareBtn = document.getElementById('share-code');
+        this.downloadBtn = document.getElementById('download-code');
+        this.sampleBtn = document.getElementById('load-sample');
         this.themeToggle = document.getElementById('theme-toggle');
         this.lineNumbers = document.getElementById('line-numbers');
         this.historyList = document.getElementById('history-list');
         this.statusIndicator = document.getElementById('server-status');
         this.languageBadge = document.getElementById('language-badge');
         this.executionTime = document.getElementById('execution-time');
-    }
-
-    initEditor() {
-        // Initialize with line numbers
-        if (this.editorElement) {
-            this.editorElement.addEventListener('input', () => {
-                this.updateLineNumbers();
-                this.autoSave();
-            });
-            
-            this.editorElement.addEventListener('keydown', (e) => {
-                if (e.key === 'Tab') {
-                    e.preventDefault();
-                    this.insertTab();
-                }
-            });
-
-            this.editorElement.addEventListener('scroll', () => {
-                if (this.lineNumbers) {
-                    this.lineNumbers.scrollTop = this.editorElement.scrollTop;
-                }
-            });
-        }
+        this.statsExecutions = document.getElementById('stats-executions');
+        this.statsLanguages = document.getElementById('stats-languages');
+        this.statsSaved = document.getElementById('stats-saved');
     }
 
     initEventListeners() {
@@ -76,34 +67,39 @@ class CodeCompiler {
             });
         }
 
-        // Run code button
-        if (this.runButton) {
-            this.runButton.addEventListener('click', () => this.executeCode());
+        // Run code
+        if (this.runBtn) {
+            this.runBtn.addEventListener('click', () => this.executeCode());
         }
 
-        // Clear output button
-        if (this.clearButton) {
-            this.clearButton.addEventListener('click', () => this.clearOutput());
+        // Clear output
+        if (this.clearBtn) {
+            this.clearBtn.addEventListener('click', () => this.clearOutput());
         }
 
-        // Save code button
-        if (this.saveButton) {
-            this.saveButton.addEventListener('click', () => this.saveCode());
+        // Save code
+        if (this.saveBtn) {
+            this.saveBtn.addEventListener('click', () => this.saveCode());
         }
 
-        // Load code button
-        if (this.loadButton) {
-            this.loadButton.addEventListener('click', () => this.loadSavedCode());
+        // Load code
+        if (this.loadBtn) {
+            this.loadBtn.addEventListener('click', () => this.showSavedCodes());
         }
 
-        // Share code button
-        if (this.shareButton) {
-            this.shareButton.addEventListener('click', () => this.shareCode());
+        // Share code
+        if (this.shareBtn) {
+            this.shareBtn.addEventListener('click', () => this.shareCode());
         }
 
-        // Download code button
-        if (this.downloadButton) {
-            this.downloadButton.addEventListener('click', () => this.downloadCode());
+        // Download code
+        if (this.downloadBtn) {
+            this.downloadBtn.addEventListener('click', () => this.downloadCode());
+        }
+
+        // Load sample
+        if (this.sampleBtn) {
+            this.sampleBtn.addEventListener('click', () => this.loadSampleCode());
         }
 
         // Theme toggle
@@ -111,27 +107,49 @@ class CodeCompiler {
             this.themeToggle.addEventListener('click', () => this.toggleTheme());
         }
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + Enter to run code
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                this.executeCode();
-            }
-            
-            // Ctrl/Cmd + S to save
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                this.saveCode();
-            }
-        });
+        // Editor events
+        if (this.editor) {
+            this.editor.addEventListener('input', () => {
+                this.updateLineNumbers();
+                this.autoSave();
+            });
+
+            this.editor.addEventListener('keydown', (e) => {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    this.insertTab();
+                }
+                
+                // Ctrl/Cmd + Enter to run
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    this.executeCode();
+                }
+                
+                // Ctrl/Cmd + S to save
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    this.saveCode();
+                }
+            });
+
+            this.editor.addEventListener('scroll', () => {
+                if (this.lineNumbers) {
+                    this.lineNumbers.scrollTop = this.editor.scrollTop;
+                }
+            });
+        }
+
+        // Window resize
+        window.addEventListener('resize', () => this.updateLineNumbers());
     }
 
     async checkServerConnection() {
         try {
             const response = await fetch(`${this.serverUrl}/health`, {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 3000
             });
             
             if (response.ok) {
@@ -141,9 +159,8 @@ class CodeCompiler {
             }
         } catch (error) {
             console.error('Server connection error:', error);
-            this.updateServerStatus('disconnected', 'Server offline');
-            // Fallback to local execution
-            this.showNotification('Server offline - using local execution', 'warning');
+            this.updateServerStatus('disconnected', 'Using local execution');
+            this.showNotification('Server offline - using local JavaScript execution', 'warning');
         }
     }
 
@@ -153,14 +170,20 @@ class CodeCompiler {
             this.statusIndicator.title = message;
             
             const dot = this.statusIndicator.querySelector('.status-dot');
+            const text = this.statusIndicator.querySelector('span:last-child');
+            
             if (dot) {
                 dot.style.backgroundColor = status === 'connected' ? '#10b981' : '#ef4444';
+            }
+            
+            if (text) {
+                text.textContent = message;
             }
         }
     }
 
     async executeCode() {
-        const code = this.editorElement.value;
+        const code = this.editor.value;
         const language = this.currentLanguage;
         
         if (!code.trim()) {
@@ -168,8 +191,13 @@ class CodeCompiler {
             return;
         }
 
+        if (this.isRunning) return;
+        
+        this.isRunning = true;
         this.showLoading(true);
+        
         const startTime = performance.now();
+        this.clearOutput();
 
         try {
             // Try server execution first
@@ -186,7 +214,7 @@ class CodeCompiler {
             });
 
             const endTime = performance.now();
-            const execTime = ((endTime - startTime) / 1000).toFixed(2);
+            const execTime = ((endTime - startTime) / 1000).toFixed(3);
             
             if (this.executionTime) {
                 this.executionTime.textContent = `${execTime}s`;
@@ -196,19 +224,28 @@ class CodeCompiler {
                 const result = await response.json();
                 this.displayOutput(result.output || '', result.error);
                 
-                // Add to history
                 this.addToHistory({
                     language: language,
-                    code: code.substring(0, 100) + (code.length > 100 ? '...' : ''),
+                    code: this.truncateCode(code),
                     timestamp: new Date().toISOString(),
-                    success: !result.error
+                    success: !result.error,
+                    execTime: execTime
                 });
+                
+                this.updateStats(true);
             } else {
                 // Fallback to local execution for JavaScript
                 if (language === 'javascript') {
-                    this.executeJavaScriptLocally(code);
+                    this.executeJavaScriptLocally(code, startTime);
                 } else {
-                    this.displayOutput('', 'Server execution failed. Please try again later.');
+                    this.displayOutput('', `Server execution failed for ${language}. Please try again later.`);
+                    this.addToHistory({
+                        language: language,
+                        code: this.truncateCode(code),
+                        timestamp: new Date().toISOString(),
+                        success: false,
+                        error: 'Server execution failed'
+                    });
                 }
             }
         } catch (error) {
@@ -216,16 +253,18 @@ class CodeCompiler {
             
             // Fallback to local execution for JavaScript
             if (language === 'javascript') {
-                this.executeJavaScriptLocally(code);
+                this.executeJavaScriptLocally(code, startTime);
             } else {
                 this.displayOutput('', 'Failed to connect to server. Please check your connection.');
+                this.showNotification('Connection failed - using local JavaScript only', 'error');
             }
         } finally {
+            this.isRunning = false;
             this.showLoading(false);
         }
     }
 
-    executeJavaScriptLocally(code) {
+    executeJavaScriptLocally(code, startTime) {
         try {
             const logs = [];
             const customConsole = {
@@ -245,62 +284,110 @@ class CodeCompiler {
                 },
                 clear: () => {
                     logs.length = 0;
+                },
+                table: (data) => {
+                    console.table(data);
+                    logs.push(JSON.stringify(data, null, 2));
                 }
             };
 
-            // Execute in a safe sandbox
+            // Execute in safe sandbox
             const func = new Function('console', '"use strict";' + code);
             func(customConsole);
             
+            const endTime = performance.now();
+            const execTime = ((endTime - startTime) / 1000).toFixed(3);
+            
+            if (this.executionTime) {
+                this.executionTime.textContent = `${execTime}s`;
+            }
+            
             this.displayOutput(logs.join('\n') || 'Code executed successfully (no output)');
             
-            // Add to history
             this.addToHistory({
                 language: 'javascript',
-                code: code.substring(0, 100) + (code.length > 100 ? '...' : ''),
+                code: this.truncateCode(code),
                 timestamp: new Date().toISOString(),
-                success: true
+                success: true,
+                execTime: execTime
             });
+            
+            this.updateStats(true);
         } catch (error) {
+            const endTime = performance.now();
+            const execTime = ((endTime - startTime) / 1000).toFixed(3);
+            
+            if (this.executionTime) {
+                this.executionTime.textContent = `${execTime}s`;
+            }
+            
             this.displayOutput('', error.message);
             
             this.addToHistory({
                 language: 'javascript',
-                code: code.substring(0, 100) + (code.length > 100 ? '...' : ''),
+                code: this.truncateCode(code),
                 timestamp: new Date().toISOString(),
                 success: false,
-                error: error.message
+                error: error.message,
+                execTime: execTime
             });
         }
     }
 
     displayOutput(output, error = null) {
-        if (this.outputElement) {
-            if (error) {
-                this.outputElement.innerHTML = `
-                    <div class="error-output">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <pre>${this.escapeHtml(error)}</pre>
+        if (!this.outputElement) return;
+        
+        const timestamp = new Date().toLocaleTimeString();
+        
+        if (error) {
+            this.outputElement.innerHTML = `
+                <div class="output-entry error">
+                    <div class="output-header">
+                        <span class="output-time">${timestamp}</span>
+                        <span class="output-badge error">Error</span>
                     </div>
-                `;
-            } else {
-                this.outputElement.innerHTML = `
-                    <div class="success-output">
-                        <i class="fas fa-check-circle"></i>
-                        <pre>${this.escapeHtml(output)}</pre>
-                    </div>
-                `;
+                    <pre class="output-content error">${this.escapeHtml(error)}</pre>
+                </div>
+            `;
+        } else if (output) {
+            // Check if output is JSON and format it
+            let formattedOutput = output;
+            try {
+                const jsonOutput = JSON.parse(output);
+                formattedOutput = JSON.stringify(jsonOutput, null, 2);
+            } catch (e) {
+                // Not JSON, keep as is
             }
             
-            // Auto-scroll to bottom
-            this.outputElement.scrollTop = this.outputElement.scrollHeight;
+            this.outputElement.innerHTML = `
+                <div class="output-entry success">
+                    <div class="output-header">
+                        <span class="output-time">${timestamp}</span>
+                        <span class="output-badge success">Success</span>
+                    </div>
+                    <pre class="output-content">${this.escapeHtml(formattedOutput)}</pre>
+                </div>
+            `;
+        } else {
+            this.outputElement.innerHTML = `
+                <div class="output-entry info">
+                    <div class="output-header">
+                        <span class="output-time">${timestamp}</span>
+                        <span class="output-badge info">Info</span>
+                    </div>
+                    <pre class="output-content">No output produced</pre>
+                </div>
+            `;
         }
+        
+        // Auto-scroll to bottom
+        this.outputElement.scrollTop = this.outputElement.scrollHeight;
     }
 
     clearOutput() {
         if (this.outputElement) {
             this.outputElement.innerHTML = `
-                <div class="empty-output">
+                <div class="output-placeholder">
                     <i class="fas fa-terminal"></i>
                     <p>Output cleared. Run your code to see results.</p>
                 </div>
@@ -309,103 +396,145 @@ class CodeCompiler {
     }
 
     showLoading(show) {
-        if (this.runButton) {
+        if (this.runBtn) {
             if (show) {
-                this.runButton.disabled = true;
-                this.runButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
+                this.runBtn.disabled = true;
+                this.runBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running...';
             } else {
-                this.runButton.disabled = false;
-                this.runButton.innerHTML = '<i class="fas fa-play"></i> Run Code';
+                this.runBtn.disabled = false;
+                this.runBtn.innerHTML = '<i class="fas fa-play"></i> Run Code';
             }
         }
     }
 
     updateLineNumbers() {
-        if (!this.lineNumbers) return;
+        if (!this.lineNumbers || !this.editor) return;
         
-        const lines = this.editorElement.value.split('\n').length;
+        const lines = this.editor.value.split('\n').length;
         let lineNumbersHtml = '';
         
         for (let i = 1; i <= lines; i++) {
-            lineNumbersHtml += `<div>${i}</div>`;
+            lineNumbersHtml += `<div class="line-number${i === lines ? ' last' : ''}">${i}</div>`;
         }
         
         this.lineNumbers.innerHTML = lineNumbersHtml;
     }
 
     insertTab() {
-        const start = this.editorElement.selectionStart;
-        const end = this.editorElement.selectionEnd;
+        const start = this.editor.selectionStart;
+        const end = this.editor.selectionEnd;
         
-        this.editorElement.value = 
-            this.editorElement.value.substring(0, start) + 
+        this.editor.value = 
+            this.editor.value.substring(0, start) + 
             '    ' + 
-            this.editorElement.value.substring(end);
+            this.editor.value.substring(end);
         
-        this.editorElement.selectionStart = this.editorElement.selectionEnd = start + 4;
+        this.editor.selectionStart = this.editor.selectionEnd = start + 4;
+        this.updateLineNumbers();
     }
 
     updateLanguageBadge() {
-        if (this.languageBadge) {
-            const languages = {
-                javascript: { icon: 'fab fa-js', color: '#f7df1e' },
-                python: { icon: 'fab fa-python', color: '#3776ab' },
-                java: { icon: 'fab fa-java', color: '#007396' },
-                cpp: { icon: 'fas fa-code', color: '#00599c' },
-                csharp: { icon: 'fas fa-code', color: '#239120' },
-                php: { icon: 'fab fa-php', color: '#777bb4' },
-                ruby: { icon: 'fas fa-gem', color: '#cc342d' },
-                go: { icon: 'fab fa-golang', color: '#00add8' },
-                rust: { icon: 'fas fa-code', color: '#000000' },
-                swift: { icon: 'fab fa-swift', color: '#ffac45' }
-            };
-            
-            const lang = languages[this.currentLanguage] || languages.javascript;
-            this.languageBadge.innerHTML = `
-                <i class="${lang.icon}" style="color: ${lang.color}"></i>
-                <span>${this.currentLanguage.toUpperCase()}</span>
-            `;
-        }
+        if (!this.languageBadge) return;
+        
+        const languages = {
+            javascript: { icon: 'fab fa-js', color: '#f7df1e', name: 'JavaScript' },
+            python: { icon: 'fab fa-python', color: '#3776ab', name: 'Python' },
+            java: { icon: 'fab fa-java', color: '#007396', name: 'Java' },
+            cpp: { icon: 'fas fa-code', color: '#00599c', name: 'C++' },
+            csharp: { icon: 'fas fa-code', color: '#239120', name: 'C#' },
+            php: { icon: 'fab fa-php', color: '#777bb4', name: 'PHP' },
+            ruby: { icon: 'fas fa-gem', color: '#cc342d', name: 'Ruby' },
+            go: { icon: 'fab fa-golang', color: '#00add8', name: 'Go' },
+            rust: { icon: 'fas fa-code', color: '#000000', name: 'Rust' },
+            swift: { icon: 'fab fa-swift', color: '#ffac45', name: 'Swift' },
+            typescript: { icon: 'fas fa-code', color: '#3178c6', name: 'TypeScript' }
+        };
+        
+        const lang = languages[this.currentLanguage] || languages.javascript;
+        this.languageBadge.innerHTML = `
+            <i class="${lang.icon}" style="color: ${lang.color}"></i>
+            <span>${lang.name}</span>
+        `;
     }
 
-    loadLanguageTemplate() {
-        const templates = {
+    loadLanguageTemplates() {
+        this.templates = {
             javascript: `// JavaScript Template
-console.log("Hello, World!");
+// Welcome to CodeMaster Compiler
 
-// Function example
-function greet(name) {
-    return \`Hello, \${name}!\`;
+// Function to calculate factorial
+function factorial(n) {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
 }
 
 // Array operations
 const numbers = [1, 2, 3, 4, 5];
 const doubled = numbers.map(n => n * 2);
 
-console.log(greet("Developer"));
-console.log("Doubled numbers:", doubled);`,
+// Object example
+const person = {
+    name: "John",
+    age: 30,
+    greet() {
+        return \`Hello, I'm \${this.name}\`;
+    }
+};
+
+// Output results
+console.log("Factorial of 5:", factorial(5));
+console.log("Doubled numbers:", doubled);
+console.log(person.greet());
+
+// Async example with Promise
+const promise = new Promise((resolve) => {
+    setTimeout(() => resolve("Async operation complete!"), 100);
+});
+
+promise.then(console.log);`,
 
             python: `# Python Template
-print("Hello, World!")
+# Welcome to CodeMaster Compiler
 
-# Function example
-def greet(name):
-    return f"Hello, {name}!"
+# Function to calculate factorial
+def factorial(n):
+    if n <= 1:
+        return 1
+    return n * factorial(n - 1)
 
 # List operations
 numbers = [1, 2, 3, 4, 5]
 doubled = [n * 2 for n in numbers]
 
-print(greet("Developer"))
-print("Doubled numbers:", doubled)`,
+# Dictionary example
+person = {
+    "name": "John",
+    "age": 30,
+    "greet": lambda: f"Hello, I'm {person['name']}"
+}
+
+# Output results
+print(f"Factorial of 5: {factorial(5)}")
+print(f"Doubled numbers: {doubled}")
+print(person["greet"]())
+
+# Fibonacci sequence
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+print("\\nFibonacci sequence:")
+for i in range(10):
+    print(f"F({i}) = {fibonacci(i)}")`,
 
             java: `// Java Template
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello, World!");
+        System.out.println("Hello, CodeMaster!");
         
-        // Function example
-        System.out.println(greet("Developer"));
+        // Calculate factorial
+        System.out.println("Factorial of 5: " + factorial(5));
         
         // Array operations
         int[] numbers = {1, 2, 3, 4, 5};
@@ -413,12 +542,29 @@ public class Main {
         
         for (int i = 0; i < numbers.length; i++) {
             doubled[i] = numbers[i] * 2;
-            System.out.println(doubled[i]);
+        }
+        
+        System.out.print("Doubled numbers: ");
+        for (int n : doubled) {
+            System.out.print(n + " ");
+        }
+        System.out.println();
+        
+        // Fibonacci sequence
+        System.out.println("\\nFibonacci sequence:");
+        for (int i = 0; i < 10; i++) {
+            System.out.println("F(" + i + ") = " + fibonacci(i));
         }
     }
     
-    public static String greet(String name) {
-        return "Hello, " + name + "!";
+    public static int factorial(int n) {
+        if (n <= 1) return 1;
+        return n * factorial(n - 1);
+    }
+    
+    public static int fibonacci(int n) {
+        if (n <= 1) return n;
+        return fibonacci(n - 1) + fibonacci(n - 2);
     }
 }`,
 
@@ -427,40 +573,130 @@ public class Main {
 #include <vector>
 using namespace std;
 
-string greet(string name) {
-    return "Hello, " + name + "!";
+// Function to calculate factorial
+int factorial(int n) {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+}
+
+// Fibonacci function
+int fibonacci(int n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
 int main() {
-    cout << "Hello, World!" << endl;
+    cout << "Hello, CodeMaster!" << endl;
     
-    // Function example
-    cout << greet("Developer") << endl;
+    // Calculate factorial
+    cout << "Factorial of 5: " << factorial(5) << endl;
     
     // Vector operations
     vector<int> numbers = {1, 2, 3, 4, 5};
     vector<int> doubled;
     
+    cout << "Doubled numbers: ";
     for (int n : numbers) {
         doubled.push_back(n * 2);
         cout << n * 2 << " ";
     }
+    cout << endl;
+    
+    // Fibonacci sequence
+    cout << "\\nFibonacci sequence:" << endl;
+    for (int i = 0; i < 10; i++) {
+        cout << "F(" << i << ") = " << fibonacci(i) << endl;
+    }
     
     return 0;
-}`
+}`,
+
+            csharp: `// C# Template
+using System;
+using System.Collections.Generic;
+
+class Program {
+    static void Main() {
+        Console.WriteLine("Hello, CodeMaster!");
+        
+        // Calculate factorial
+        Console.WriteLine($"Factorial of 5: {Factorial(5)}");
+        
+        // List operations
+        List<int> numbers = new List<int> { 1, 2, 3, 4, 5 };
+        List<int> doubled = new List<int>();
+        
+        Console.Write("Doubled numbers: ");
+        foreach (int n in numbers) {
+            doubled.Add(n * 2);
+            Console.Write(n * 2 + " ");
+        }
+        Console.WriteLine();
+        
+        // Fibonacci sequence
+        Console.WriteLine("\\nFibonacci sequence:");
+        for (int i = 0; i < 10; i++) {
+            Console.WriteLine($"F({i}) = {Fibonacci(i)}");
+        }
+    }
+    
+    static int Factorial(int n) {
+        if (n <= 1) return 1;
+        return n * Factorial(n - 1);
+    }
+    
+    static int Fibonacci(int n) {
+        if (n <= 1) return n;
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+    }
+}`,
+
+            php: `<?php
+// PHP Template
+echo "Hello, CodeMaster!\\n";
+
+// Function to calculate factorial
+function factorial($n) {
+    if ($n <= 1) return 1;
+    return $n * factorial($n - 1);
+}
+
+// Array operations
+$numbers = [1, 2, 3, 4, 5];
+$doubled = array_map(function($n) {
+    return $n * 2;
+}, $numbers);
+
+echo "Factorial of 5: " . factorial(5) . "\\n";
+echo "Doubled numbers: " . implode(", ", $doubled) . "\\n";
+
+// Fibonacci function
+function fibonacci($n) {
+    if ($n <= 1) return $n;
+    return fibonacci($n - 1) + fibonacci($n - 2);
+}
+
+echo "\\nFibonacci sequence:\\n";
+for ($i = 0; $i < 10; $i++) {
+    echo "F($i) = " . fibonacci($i) . "\\n";
+}
+?>`
         };
 
-        if (templates[this.currentLanguage] && this.editorElement) {
-            this.editorElement.value = templates[this.currentLanguage];
+        // Load template for current language
+        this.loadLanguageTemplate();
+    }
+
+    loadLanguageTemplate() {
+        if (this.templates[this.currentLanguage] && this.editor) {
+            this.editor.value = this.templates[this.currentLanguage];
             this.updateLineNumbers();
         }
     }
 
     loadSampleCode() {
-        const sampleBtn = document.getElementById('load-sample');
-        if (sampleBtn) {
-            sampleBtn.addEventListener('click', () => {
-                this.editorElement.value = `// Fibonacci Sequence
+        const samples = {
+            fibonacci: `// Fibonacci Sequence
 function fibonacci(n) {
     if (n <= 1) return n;
     return fibonacci(n - 1) + fibonacci(n - 2);
@@ -469,24 +705,133 @@ function fibonacci(n) {
 console.log("First 10 Fibonacci numbers:");
 for (let i = 0; i < 10; i++) {
     console.log(\`F(\${i}) = \${fibonacci(i)}\`);
-}`;
-                this.updateLineNumbers();
-            });
+}`,
+            
+            sorting: `// Bubble Sort Implementation
+function bubbleSort(arr) {
+    let n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+        for (let j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+            }
         }
+    }
+    return arr;
+}
+
+const numbers = [64, 34, 25, 12, 22, 11, 90];
+console.log("Original array:", numbers);
+console.log("Sorted array:", bubbleSort([...numbers]));`,
+            
+            palindrome: `// Palindrome Checker
+function isPalindrome(str) {
+    const clean = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return clean === clean.split('').reverse().join('');
+}
+
+const testStrings = [
+    "racecar",
+    "hello",
+    "A man, a plan, a canal: Panama",
+    "Was it a car or a cat I saw?"
+];
+
+testStrings.forEach(str => {
+    console.log(\`"\${str}" is \${isPalindrome(str) ? '' : 'not '}a palindrome\`);
+});`,
+            
+            prime: `// Prime Number Checker
+function isPrime(n) {
+    if (n <= 1) return false;
+    if (n <= 3) return true;
+    if (n % 2 === 0 || n % 3 === 0) return false;
+    
+    for (let i = 5; i * i <= n; i += 6) {
+        if (n % i === 0 || n % (i + 2) === 0) return false;
+    }
+    return true;
+}
+
+console.log("Prime numbers up to 50:");
+for (let i = 2; i <= 50; i++) {
+    if (isPrime(i)) {
+        console.log(i);
+    }
+}`
+        };
+
+        // Create a modal to select sample
+        this.showSampleModal(samples);
+    }
+
+    showSampleModal(samples) {
+        const modal = document.createElement('div');
+        modal.className = 'sample-modal';
+        modal.innerHTML = `
+            <div class="sample-modal-content">
+                <div class="sample-modal-header">
+                    <h3><i class="fas fa-code-branch"></i> Choose Sample Code</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="sample-modal-body">
+                    ${Object.entries(samples).map(([key, code]) => `
+                        <div class="sample-option" data-sample="${key}">
+                            <i class="fas fa-file-code"></i>
+                            <span>${key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Add event listeners
+        modal.querySelector('.close-modal').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        modal.querySelectorAll('.sample-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const sampleKey = option.dataset.sample;
+                if (this.editor) {
+                    this.editor.value = samples[sampleKey];
+                    this.updateLineNumbers();
+                    this.showNotification(`Loaded ${sampleKey} sample`, 'success');
+                }
+                modal.remove();
+            });
+        });
+
+        // Close when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
     }
 
     saveCode() {
-        const code = this.editorElement.value;
+        const code = this.editor.value;
         const language = this.currentLanguage;
+        
+        if (!code.trim()) {
+            this.showNotification('No code to save', 'warning');
+            return;
+        }
         
         const savedCodes = JSON.parse(localStorage.getItem('codemaster_saved_codes') || '[]');
         
-        savedCodes.push({
+        const newSave = {
             id: Date.now(),
             language: language,
             code: code,
-            timestamp: new Date().toISOString()
-        });
+            timestamp: new Date().toISOString(),
+            description: prompt('Enter a description for this code (optional):', `Code ${savedCodes.length + 1}`) || `Code ${savedCodes.length + 1}`
+        };
+        
+        savedCodes.push(newSave);
         
         // Keep only last 20 saved codes
         if (savedCodes.length > 20) {
@@ -494,10 +839,12 @@ for (let i = 0; i < 10; i++) {
         }
         
         localStorage.setItem('codemaster_saved_codes', JSON.stringify(savedCodes));
+        this.savedCodes = savedCodes;
+        this.updateStats();
         this.showNotification('Code saved successfully!', 'success');
     }
 
-    loadSavedCode() {
+    showSavedCodes() {
         const savedCodes = JSON.parse(localStorage.getItem('codemaster_saved_codes') || '[]');
         
         if (savedCodes.length === 0) {
@@ -505,28 +852,93 @@ for (let i = 0; i < 10; i++) {
             return;
         }
         
-        // Create modal or dropdown to select saved code
-        const lastCode = savedCodes[savedCodes.length - 1];
-        this.editorElement.value = lastCode.code;
-        this.currentLanguage = lastCode.language;
-        
-        if (this.languageSelect) {
-            this.languageSelect.value = lastCode.language;
-        }
-        
-        this.updateLineNumbers();
-        this.updateLanguageBadge();
-        this.showNotification('Last saved code loaded', 'success');
+        const modal = document.createElement('div');
+        modal.className = 'saved-modal';
+        modal.innerHTML = `
+            <div class="saved-modal-content">
+                <div class="saved-modal-header">
+                    <h3><i class="fas fa-folder-open"></i> Saved Codes</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="saved-modal-body">
+                    ${savedCodes.map((save, index) => `
+                        <div class="saved-item" data-id="${save.id}">
+                            <div class="saved-item-info">
+                                <span class="saved-language">${save.language}</span>
+                                <span class="saved-description">${save.description}</span>
+                                <span class="saved-time">${new Date(save.timestamp).toLocaleString()}</span>
+                            </div>
+                            <div class="saved-item-actions">
+                                <button class="load-saved" title="Load code">
+                                    <i class="fas fa-folder-open"></i>
+                                </button>
+                                <button class="delete-saved" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Close button
+        modal.querySelector('.close-modal').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        // Load saved code
+        modal.querySelectorAll('.load-saved').forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                const save = savedCodes[index];
+                this.editor.value = save.code;
+                this.currentLanguage = save.language;
+                if (this.languageSelect) {
+                    this.languageSelect.value = save.language;
+                }
+                this.updateLanguageBadge();
+                this.updateLineNumbers();
+                this.showNotification('Code loaded successfully', 'success');
+                modal.remove();
+            });
+        });
+
+        // Delete saved code
+        modal.querySelectorAll('.delete-saved').forEach((btn, index) => {
+            btn.addEventListener('click', () => {
+                if (confirm('Delete this saved code?')) {
+                    savedCodes.splice(index, 1);
+                    localStorage.setItem('codemaster_saved_codes', JSON.stringify(savedCodes));
+                    modal.remove();
+                    this.showSavedCodes(); // Refresh modal
+                    this.showNotification('Code deleted', 'info');
+                }
+            });
+        });
+
+        // Close when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
     }
 
     async shareCode() {
-        const code = this.editorElement.value;
+        const code = this.editor.value;
         const language = this.currentLanguage;
         
+        if (!code.trim()) {
+            this.showNotification('No code to share', 'warning');
+            return;
+        }
+        
         try {
-            // Create a shareable link (you'd implement this with your backend)
+            // Create share data
             const shareData = {
-                title: 'CodeMaster Share',
+                title: 'CodeMaster Code Share',
                 text: `Check out this ${language} code on CodeMaster!`,
                 url: window.location.href + '?code=' + encodeURIComponent(btoa(code))
             };
@@ -546,8 +958,13 @@ for (let i = 0; i < 10; i++) {
     }
 
     downloadCode() {
-        const code = this.editorElement.value;
+        const code = this.editor.value;
         const language = this.currentLanguage;
+        
+        if (!code.trim()) {
+            this.showNotification('No code to download', 'warning');
+            return;
+        }
         
         const extensions = {
             javascript: 'js',
@@ -559,7 +976,8 @@ for (let i = 0; i < 10; i++) {
             ruby: 'rb',
             go: 'go',
             rust: 'rs',
-            swift: 'swift'
+            swift: 'swift',
+            typescript: 'ts'
         };
         
         const extension = extensions[language] || 'txt';
@@ -580,14 +998,12 @@ for (let i = 0; i < 10; i++) {
     addToHistory(entry) {
         this.history.unshift(entry);
         
-        // Keep only last 50 entries
-        if (this.history.length > 50) {
+        // Keep only last 20 entries
+        if (this.history.length > 20) {
             this.history.pop();
         }
         
-        // Save to localStorage
         localStorage.setItem('codemaster_history', JSON.stringify(this.history));
-        
         this.updateHistoryDisplay();
     }
 
@@ -597,6 +1013,14 @@ for (let i = 0; i < 10; i++) {
             this.history = JSON.parse(saved);
             this.updateHistoryDisplay();
         }
+    }
+
+    loadSavedCodes() {
+        const saved = localStorage.getItem('codemaster_saved_codes');
+        if (saved) {
+            this.savedCodes = JSON.parse(saved);
+        }
+        this.updateStats();
     }
 
     updateHistoryDisplay() {
@@ -620,21 +1044,39 @@ for (let i = 0; i < 10; i++) {
                 <div class="history-details">
                     <div class="history-language">${entry.language}</div>
                     <div class="history-code">${this.escapeHtml(entry.code)}</div>
-                    <div class="history-time">${this.formatTime(entry.timestamp)}</div>
+                    <div class="history-meta">
+                        <span class="history-time">${this.formatTime(entry.timestamp)}</span>
+                        ${entry.execTime ? `<span class="history-time"><i class="fas fa-clock"></i> ${entry.execTime}s</span>` : ''}
+                    </div>
                 </div>
             </div>
         `).join('');
     }
 
+    updateStats() {
+        if (this.statsExecutions) {
+            this.statsExecutions.textContent = this.history.length;
+        }
+        
+        if (this.statsLanguages) {
+            const uniqueLanguages = new Set(this.history.map(h => h.language)).size;
+            this.statsLanguages.textContent = uniqueLanguages;
+        }
+        
+        if (this.statsSaved) {
+            this.statsSaved.textContent = this.savedCodes.length;
+        }
+    }
+
     autoSave() {
-        const code = this.editorElement.value;
+        const code = this.editor.value;
         localStorage.setItem('codemaster_autosave', code);
     }
 
     loadAutoSave() {
         const saved = localStorage.getItem('codemaster_autosave');
-        if (saved && this.editorElement) {
-            this.editorElement.value = saved;
+        if (saved && this.editor && this.editor.value === '') {
+            this.editor.value = saved;
             this.updateLineNumbers();
         }
     }
@@ -675,7 +1117,7 @@ for (let i = 0; i < 10; i++) {
         this.applyTheme();
         this.savePreferences();
         
-        const icon = this.themeToggle.querySelector('i');
+        const icon = this.themeToggle?.querySelector('i');
         if (icon) {
             icon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
@@ -686,34 +1128,34 @@ for (let i = 0; i < 10; i++) {
     }
 
     showNotification(message, type = 'info') {
-        // Create notification element
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <i class="fas ${this.getNotificationIcon(type)}"></i>
-            <span>${message}</span>
-        `;
         
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => notification.classList.add('show'), 10);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
-
-    getNotificationIcon(type) {
         const icons = {
             success: 'fa-check-circle',
             error: 'fa-exclamation-circle',
             warning: 'fa-exclamation-triangle',
             info: 'fa-info-circle'
         };
-        return icons[type] || icons.info;
+        
+        notification.innerHTML = `
+            <i class="fas ${icons[type] || icons.info}"></i>
+            <span>${message}</span>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.classList.add('show'), 10);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    truncateCode(code, maxLength = 50) {
+        if (code.length <= maxLength) return code;
+        return code.substring(0, maxLength) + '...';
     }
 
     escapeHtml(text) {
@@ -737,10 +1179,7 @@ for (let i = 0; i < 10; i++) {
     }
 }
 
-// Initialize compiler when DOM is ready
+// Initialize compiler
 document.addEventListener('DOMContentLoaded', () => {
-    window.compiler = new CodeCompiler();
-    
-    // Load auto-saved code
-    window.compiler.loadAutoSave();
+    window.compiler = new CodeMasterCompiler();
 });
