@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - CodeMaster</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Admin Panel Styles */
+        .admin-login {
+            max-width: 400px;
+            margin: 4rem auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .admin-login h2 {
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+        }
+        
+        .admin-login h2 i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+        
+        .admin-dashboard {
+            display: none;
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+        
+        .admin-nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .admin-nav .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .admin-nav .logo i {
+            color: var(--primary-color);
+        }
+        
+        .admin-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .admin-badge {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .admin-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+        
+        .admin-tab {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.5rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        
+        .admin-tab:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .admin-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Dashboard Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card-large {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+        }
+        
+        .stat-card-large:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+        
+        .stat-icon-large {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .stat-info-large h3 {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .stat-number-large {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        /* Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .chart-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .chart-card h3 i {
+            color: var(--primary-color);
+        }
+        
+        canvas {
+            max-height: 300px;
+            width: 100% !important;
+        }
+        
+        /* Blog Management */
+        .blog-management {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        
+        .blog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .blog-editor {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .blog-editor h3 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .form-group textarea {
+            min-height: 200px;
+            font-family: monospace;
+            line-height: 1.6;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .editor-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+        }
+        
+        .blog-table {
+            overflow-x: auto;
+        }
+        
+        .blog-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .blog-table th {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .blog-table td {
+            padding: 1rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .blog-table tr:hover td {
+            background: var(--bg-secondary);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        .btn-edit {
+            background: var(--info);
+            color: white;
+        }
+        
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-icon:hover {
+            transform: translateY(-2px);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-center i {
+            font-size: 3rem;
+            color: var(--text-secondary);
+            margin: 1rem 0;
+            display: block;
+        }
+        
+        .text-center p {
+            color: var(--text-secondary);
+        }
+        
+        /* User Management */
+        .settings-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .settings-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .theme-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .theme-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .theme-option:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .theme-option.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .theme-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .editor-actions {
+                flex-direction: column;
+            }
+            
+            .admin-nav-right {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Login Form -->
+    <div class="admin-login" id="adminLogin">
+        <h2><i class="fas fa-lock"></i> Admin Login</h2>
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="username" placeholder="Enter username" required>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-key"></i> Password</label>
+                <input type="password" id="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%;">
+                <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+            </button>
+        </form>
+    </div>
+
+    <!-- Admin Dashboard (Hidden by default) -->
+    <div class="admin-dashboard">
+        <nav class="admin-nav">
+            <a href="index.html" class="logo">
+                <i class="fas fa-code"></i>
+                CodeMaster Admin
+            </a>
+            <div class="admin-nav-right">
+                <span class="admin-badge">
+                    <i class="fas fa-shield-alt"></i> Administrator
+                </span>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </nav>
+
+        <div class="admin-container">
+            <!-- Admin Tabs -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="dashboard">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </button>
+                <button class="admin-tab" data-tab="blogs">
+                    <i class="fas fa-blog"></i> Blog Management
+                </button>
+                <button class="admin-tab" data-tab="users">
+                    <i class="fas fa-users-cog"></i> Settings
+                </button>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div class="tab-content active" id="dashboardTab">
+                <div class="stats-grid">
+                    <div class="stat-card-large">
+                        <div class="stat-icon-large">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <div class="stat-info-large">
+                            <h3>Blog Posts</h3>
+                            <div class="stat-number-large" id="blogCount">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-large">
+                        <div class="stat-icon-large">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="stat-info-large">
+                            <h3>Compilations</h3>
+                            <div class="stat-number-large" id="compilationCount">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card-large">
+                        <div class="stat-icon-large">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="stat-info-large">
+                            <h3>Conversions</h3>
+                            <div class="stat-number-large" id="conversionCount">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-pie"></i> Language Usage</h3>
+                        <canvas id="languagesChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fas fa-chart-line"></i> Activity (Last 7 Days)</h3>
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Management Tab -->
+            <div class="tab-content" id="blogsTab">
+                <div class="blog-management">
+                    <div class="blog-header">
+                        <h2><i class="fas fa-blog"></i> Blog Posts</h2>
+                        <button class="btn-primary" id="newBlogBtn">
+                            <i class="fas fa-plus"></i> New Blog Post
+                        </button>
+                    </div>
+
+                    <!-- Blog Editor (Hidden by default) -->
+                    <div class="blog-editor" id="blogEditor" style="display: none;">
+                        <h3><i class="fas fa-edit"></i> <span id="editorTitle">Create New Blog Post</span></h3>
+                        <form id="blogForm">
+                            <input type="hidden" id="blogId">
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Title *</label>
+                                    <input type="text" id="blogTitle" required placeholder="Enter blog title">
+                                </div>
+                                <div class="form-group">
+                                    <label>Author</label>
+                                    <input type="text" id="blogAuthor" value="Admin" placeholder="Author name">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select id="blogCategory">
+                                        <option value="Programming">Programming</option>
+                                        <option value="Web Dev">Web Dev</option>
+                                        <option value="AI/ML">AI/ML</option>
+                                        <option value="Mobile">Mobile</option>
+                                        <option value="Security">Security</option>
+                                        <option value="Performance">Performance</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tags (comma separated)</label>
+                                    <input type="text" id="blogTags" placeholder="javascript, python, tutorial">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Content (Markdown supported) *</label>
+                                <textarea id="blogContent" required placeholder="Write your blog post content here..."></textarea>
+                            </div>
+
+                            <div class="editor-actions">
+                                <button type="submit" class="btn-success">
+                                    <i class="fas fa-save"></i> Save Post
+                                </button>
+                                <button type="button" class="btn-primary" id="cancelEdit">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="button" class="btn-danger" id="deleteBlog" style="display: none;">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Blog List -->
+                    <div class="blog-table" id="blogList">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blogTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <i class="fas fa-newspaper"></i>
+                                        <p>No blog posts yet. Create your first post!</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content" id="usersTab">
+                <div class="settings-card">
+                    <h3><i class="fas fa-user-plus"></i> Add New Admin User</h3>
+                    <form id="addUserForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" placeholder="Enter username" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" placeholder="Enter email" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" placeholder="Enter password" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password</label>
+                                <input type="password" placeholder="Confirm password" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-user-plus"></i> Add User
+                        </button>
+                    </form>
+                </div>
+
+                <div class="settings-card">
+                    <h3><i class="fas fa-key"></i> Change Password</h3>
+                    <form id="changePasswordForm">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <input type="password" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-sync-alt"></i> Update Password
+                        </button>
+                    </form>
+                </div>
+
+                <div class="settings-card">
+                    <h3><i class="fas fa-palette"></i> Theme Settings</h3>
+                    <div class="theme-options">
+                        <div class="theme-option active" data-theme="light">
+                            <i class="fas fa-sun"></i>
+                            <span>Light Mode</span>
+                        </div>
+                        <div class="theme-option" data-theme="dark">
+                            <i class="fas fa-moon"></i>
+                            <span>Dark Mode</span>
+                        </div>
+                        <div class="theme-option" data-theme="auto">
+                            <i class="fas fa-circle-half-stroke"></i>
+                            <span>Auto (System)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="data.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
