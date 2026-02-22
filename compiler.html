@@ -201,7 +201,88 @@
                 <h1><i class="fas fa-play" style="color: var(--primary-color);"></i> Multi-Language Compiler</h1>
                 <p>Write, compile, and execute code in real-time. Supports 10+ programming languages.</p>
             </div>
+            
+<!-- Add this to your compiler.html where the compiler section is -->
+<div class="compiler-wrapper">
+    <div class="compiler-header">
+        <div class="language-selector">
+            <select id="language" class="language-select">
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="cpp">C++</option>
+                <option value="csharp">C#</option>
+                <option value="php">PHP</option>
+                <option value="ruby">Ruby</option>
+                <option value="go">Go</option>
+                <option value="rust">Rust</option>
+                <option value="swift">Swift</option>
+            </select>
+            <div class="language-badge" id="language-badge">
+                <i class="fab fa-js"></i>
+                <span>JAVASCRIPT</span>
+            </div>
+        </div>
+        
+        <div class="server-status" id="server-status">
+            <span class="status-dot"></span>
+            <span>Server connected</span>
+        </div>
+    </div>
+    
+    <div class="editor-container">
+        <div class="editor-panel">
+            <div class="line-numbers" id="line-numbers">
+                <!-- Line numbers will be added by JavaScript -->
+            </div>
+            <textarea id="code-editor" placeholder="Write your code here..."></textarea>
+        </div>
+        
+        <div class="output-panel">
+            <div class="output-header">
+                <span><i class="fas fa-terminal"></i> Output</span>
+                <span class="execution-time" id="execution-time"></span>
+            </div>
+            <div id="output">
+                <div class="empty-output">
+                    <i class="fas fa-play-circle"></i>
+                    <p>Click "Run Code" or press Ctrl+Enter to execute</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toolbar">
+        <button class="tool-btn" id="run-code">
+            <i class="fas fa-play"></i> Run (Ctrl+Enter)
+        </button>
+        <button class="tool-btn" id="clear-output">
+            <i class="fas fa-eraser"></i> Clear
+        </button>
+        <button class="tool-btn" id="save-code">
+            <i class="fas fa-save"></i> Save
+        </button>
+        <button class="tool-btn" id="load-code">
+            <i class="fas fa-folder-open"></i> Load
+        </button>
+        <button class="tool-btn" id="share-code">
+            <i class="fas fa-share-alt"></i> Share
+        </button>
+        <button class="tool-btn" id="download-code">
+            <i class="fas fa-download"></i> Download
+        </button>
+        <button class="tool-btn" id="load-sample">
+            <i class="fas fa-code-branch"></i> Sample
+        </button>
+    </div>
+</div>
 
+<div class="history-panel">
+    <h3><i class="fas fa-history"></i> Execution History</h3>
+    <div class="history-list" id="history-list">
+        <!-- History will be populated by JavaScript -->
+    </div>
+</div>
             <div class="compiler-wrapper">
                 <div class="compiler-toolbar">
                     <select id="language" class="language-select">
@@ -431,4 +512,5 @@ for (let i = 0; i <= 10; i++) {
     </script>
 </body>
 </html>
+
 
