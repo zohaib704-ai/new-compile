@@ -1,0 +1,31 @@
+{
+  "name": "codemaster-backend",
+  "version": "1.0.0",
+  "description": "Backend server for CodeMaster compilation platform with multi-language support",
+  "main": "Server.js",
+  "scripts": {
+    "start": "node Server.js",
+    "dev": "nodemon Server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "compiler",
+    "code-execution",
+    "programming",
+    "nodejs",
+    "express"
+  ],
+  "author": "CodeMaster",
+  "license": "MIT"
+}
