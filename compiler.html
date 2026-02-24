@@ -3,794 +3,1077 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeMaster - Multi-Language Compiler</title>
-    <link rel="stylesheet" href="style.css">
+    <title>⚡ CodeCompiler Pro - Run Code in 15+ Languages</title>
     <style>
-        /* Additional responsive styles for compiler */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-primary: #0a0c10;
+            --bg-secondary: #1a1e24;
+            --bg-tertiary: #252a33;
+            --accent-primary: #00ff9d;
+            --accent-secondary: #00b8ff;
+            --text-primary: #e4e6eb;
+            --text-secondary: #b0b3b8;
+            --error-color: #ff5f5f;
+            --success-color: #00ff9d;
+            --border-color: #2e3440;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        /* Navbar styles */
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #555;
-            font-weight: 500;
-            transition: color 0.3s;
-            font-size: 1rem;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #667eea;
-        }
-
-        .menu-toggle {
-            display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #555;
-        }
-
-        /* Main compiler container */
-        .compiler-container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        /* Header section */
-        .compiler-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .compiler-header h1 {
-            font-size: 2.5rem;
-            color: white;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .compiler-header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
-        }
-
-        /* Language selector */
-        .language-selector {
-            background: white;
-            padding: 1rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1.5rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .language-selector select {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            color: #333;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: white;
-            min-width: 200px;
-        }
-
-        .language-selector select:hover,
-        .language-selector select:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 0.8rem 1.8rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #555;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
-        }
-
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-            transform: translateY(-2px);
-        }
-
-        /* Editor and output grid */
-        .code-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .editor-section,
-        .output-section {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Fira Code', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
             overflow: hidden;
         }
 
-        .section-header {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-bottom: 1px solid #e0e0e0;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 4px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .section-header h3 {
-            color: #333;
-            font-size: 1.1rem;
+        .logo {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { filter: drop-shadow(0 0 2px var(--accent-primary)); }
+            50% { filter: drop-shadow(0 0 10px var(--accent-primary)); }
+            100% { filter: drop-shadow(0 0 2px var(--accent-primary)); }
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .language-picker {
+            position: relative;
+        }
+
+        .lang-select {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 10px 32px 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2300ff9d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            min-width: 150px;
+        }
+
+        .lang-select:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .btn-run {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--bg-primary);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-run:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 157, 0.3);
+        }
+
+        .btn-run:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-primary);
+            background: var(--bg-secondary);
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            gap: 1px;
+            background: var(--border-color);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-secondary);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .file-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .file-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .file-item.active {
+            background: var(--bg-tertiary);
+            color: var(--accent-primary);
+            border-left: 2px solid var(--accent-primary);
+        }
+
+        .template-section {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .template-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .template-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .template-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
+        /* Editor Area */
+        .editor-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            min-width: 0;
+        }
+
+        .editor-tabs {
+            background: var(--bg-secondary);
+            padding: 0 16px;
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab.active {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        .editor-container {
+            flex: 1;
+            display: flex;
+            position: relative;
+            background: var(--bg-primary);
+        }
+
+        .line-numbers {
+            padding: 20px 10px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            text-align: right;
+            user-select: none;
+            border-right: 1px solid var(--border-color);
         }
 
         .code-editor {
-            padding: 1rem;
-            background: #1e1e1e;
-            min-height: 400px;
-            max-height: 500px;
-            overflow: auto;
-        }
-
-        .code-editor textarea {
-            width: 100%;
-            height: 100%;
-            min-height: 400px;
-            background: #1e1e1e;
-            color: #d4d4d4;
+            flex: 1;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 20px;
             border: none;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-            resize: vertical;
-            padding: 0;
-        }
-
-        .code-editor textarea:focus {
+            resize: none;
             outline: none;
-        }
-
-        .output-area {
-            padding: 1rem;
-            background: #1e1e1e;
-            min-height: 400px;
-            max-height: 500px;
-            overflow: auto;
-            color: #d4d4d4;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .output-area pre {
-            margin: 0;
             white-space: pre-wrap;
-            word-wrap: break-word;
         }
 
-        /* Features section */
-        .features-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 3rem;
+        /* Output Panel */
+        .output-panel {
+            width: 400px;
+            background: var(--bg-secondary);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        .feature-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        .output-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .output-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .output-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .output-content {
+            flex: 1;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            background: var(--bg-primary);
+        }
+
+        .output-content.success {
+            color: var(--success-color);
+        }
+
+        .output-content.error {
+            color: var(--error-color);
+        }
+
+        .output-stats {
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
             text-align: center;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--bg-tertiary);
+            border-top-color: var(--accent-primary);
+            border-right-color: var(--accent-secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-primary);
+            font-size: 18px;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--accent-primary);
+            border-radius: 6px;
+            color: var(--text-primary);
+            transform: translateX(400px);
             transition: transform 0.3s;
+            z-index: 1001;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .feature-card:hover {
-            transform: translateY(-5px);
+        .notification.show {
+            transform: translateX(0);
         }
 
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card h4 {
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .feature-card p {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        /* Sample programs */
-        .samples-section {
-            margin-top: 3rem;
-        }
-
-        .samples-section h3 {
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .sample-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .sample-card {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-
-        .sample-card:hover {
-            transform: translateY(-2px);
-            border-color: #667eea;
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .sample-card h4 {
-            color: #333;
-            margin-bottom: 0.3rem;
-        }
-
-        .sample-card p {
-            color: #666;
-            font-size: 0.85rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: white;
-            margin-top: 4rem;
-            padding: 2rem 0;
-            text-align: center;
-            color: #666;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .compiler-header h1 {
-                font-size: 2rem;
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 200px;
+            }
+            .output-panel {
+                width: 300px;
             }
         }
 
         @media (max-width: 768px) {
-            .nav-container {
-                padding: 1rem;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .nav-links {
+            .sidebar {
                 display: none;
-                width: 100%;
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem 0;
             }
-
-            .nav-links.active {
-                display: flex;
+            .output-panel {
+                display: none;
             }
-
-            .compiler-container {
-                padding: 0 1rem;
-            }
-
-            .code-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .language-selector {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .language-selector select {
-                width: 100%;
-            }
-
-            .action-buttons {
-                justify-content: stretch;
-            }
-
-            .btn {
-                flex: 1;
-                justify-content: center;
-            }
-
-            .editor-section,
-            .output-section {
-                min-height: auto;
-            }
-
-            .code-editor textarea,
-            .output-area {
-                min-height: 300px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .compiler-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .feature-card {
-                padding: 1rem;
-            }
-
-            .sample-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Loading animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Success/Error messages */
-        .message {
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            display: none;
-        }
-
-        .message.success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #10b981;
-        }
-
-        .message.error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #ef4444;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="logo">CodeMaster</a>
-            <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-            <div class="nav-links" id="navLinks">
-                <a href="index.html">Home</a>
-                <a href="compiler.html" class="active">Compiler</a>
-                <a href="converter.html">Converter</a>
-                <a href="blog.html">Blog</a>
-                <a href="about.html">About</a>
-                <a href="contact.html">Contact</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Compiler Container -->
-    <div class="compiler-container">
+    <div class="container">
         <!-- Header -->
-        <div class="compiler-header">
-            <h1>🚀 Multi-Language Compiler</h1>
-            <p>Write, compile, and run code in 10+ programming languages instantly in your browser</p>
-        </div>
-
-        <!-- Language Selector -->
-        <div class="language-selector">
-            <select id="languageSelect">
-                <option value="python">🐍 Python</option>
-                <option value="javascript">📜 JavaScript</option>
-                <option value="java">☕ Java</option>
-                <option value="cpp">⚙️ C++</option>
-                <option value="c">🔧 C</option>
-                <option value="csharp">🎯 C#</option>
-                <option value="go">🔵 Go</option>
-                <option value="rust">⚡ Rust</option>
-                <option value="php">🐘 PHP</option>
-                <option value="swift">🍎 Swift</option>
-                <option value="ruby">💎 Ruby</option>
-                <option value="typescript">📘 TypeScript</option>
-            </select>
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <h1>CodeCompiler Pro</h1>
+            </div>
             
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="runCode()">
-                    <span>▶</span> Run Code
+            <div class="controls">
+                <div class="language-picker">
+                    <select id="languageSelect" class="lang-select">
+                        <optgroup label="Popular">
+                            <option value="javascript" selected>JavaScript (Node.js)</option>
+                            <option value="python">Python 3</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                            <option value="csharp">C#</option>
+                        </optgroup>
+                        <optgroup label="Other Languages">
+                            <option value="typescript">TypeScript</option>
+                            <option value="ruby">Ruby</option>
+                            <option value="php">PHP</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                            <option value="swift">Swift</option>
+                            <option value="kotlin">Kotlin</option>
+                            <option value="c">C</option>
+                            <option value="r">R</option>
+                            <option value="perl">Perl</option>
+                            <option value="lua">Lua</option>
+                            <option value="haskell">Haskell</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <button class="btn-run" onclick="runCode()">
+                    <span>▶</span>
+                    Run Code (Ctrl+Enter)
                 </button>
-                <button class="btn btn-secondary" onclick="saveCode()">
-                    <span>💾</span> Save
+
+                <button class="btn-secondary" onclick="saveCode()">
+                    <span>💾</span>
+                    Save
                 </button>
-                <button class="btn btn-secondary" onclick="clearCode()">
-                    <span>🗑️</span> Clear
+
+                <button class="btn-secondary" onclick="loadCode()">
+                    <span>📂</span>
+                    Load
                 </button>
-                <button class="btn btn-success" onclick="downloadCode()">
-                    <span>📥</span> Download
+
+                <button class="btn-secondary" onclick="clearEditor()">
+                    <span>🗑️</span>
+                    Clear
                 </button>
             </div>
-        </div>
+        </header>
 
-        <!-- Message Area -->
-        <div id="messageArea" class="message"></div>
-
-        <!-- Code Grid -->
-        <div class="code-grid">
-            <!-- Editor Section -->
-            <div class="editor-section">
-                <div class="section-header">
-                    <h3>
-                        <span>📝</span> Code Editor
-                    </h3>
-                    <span id="cursorPosition">Ln 1, Col 1</span>
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    📁 EXPLORER
                 </div>
-                <div class="code-editor">
-                    <textarea id="codeEditor" placeholder="Write your code here..." onscroll="updateLineNumbers()" onkeyup="updateCursorPosition(event)"># Fibonacci Sequence
-def fibonacci(n):
-    if n <= 1:
-        return n
-    return fibonacci(n-1) + fibonacci(n-2)
+                <div class="file-list">
+                    <div class="file-item active">
+                        <span>📄</span>
+                        main.js
+                    </div>
+                    <div class="file-item">
+                        <span>📄</span>
+                        utils.js
+                    </div>
+                    <div class="file-item">
+                        <span>📄</span>
+                        style.css
+                    </div>
+                </div>
 
-# Calculate first 10 numbers
-print("Fibonacci Sequence:")
-for i in range(10):
-    print(f"F({i}) = {fibonacci(i)}")</textarea>
+                <div class="template-section">
+                    <div class="template-title">📋 QUICK TEMPLATES</div>
+                    <div class="template-grid">
+                        <button class="template-btn" onclick="loadTemplate('hello')">Hello World</button>
+                        <button class="template-btn" onclick="loadTemplate('fibonacci')">Fibonacci</button>
+                        <button class="template-btn" onclick="loadTemplate('prime')">Prime Numbers</button>
+                        <button class="template-btn" onclick="loadTemplate('sort')">Sorting</button>
+                        <button class="template-btn" onclick="loadTemplate('class')">Class</button>
+                        <button class="template-btn" onclick="loadTemplate('api')">API Call</button>
+                        <button class="template-btn" onclick="loadTemplate('file')">File I/O</button>
+                        <button class="template-btn" onclick="loadTemplate('math')">Math</button>
+                    </div>
+                </div>
+
+                <div class="template-section">
+                    <div class="template-title">📊 SNIPPETS</div>
+                    <div class="template-grid">
+                        <button class="template-btn" onclick="loadSnippet('for')">For Loop</button>
+                        <button class="template-btn" onclick="loadSnippet('if')">If-Else</button>
+                        <button class="template-btn" onclick="loadSnippet('function')">Function</button>
+                        <button class="template-btn" onclick="loadSnippet('array')">Array</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Editor Area -->
+            <div class="editor-area">
+                <div class="editor-tabs">
+                    <div class="tab active">
+                        <span>📄</span>
+                        main.js
+                        <span style="margin-left: 8px; color: var(--text-secondary);">×</span>
+                    </div>
+                    <div class="tab">
+                        <span>📄</span>
+                        output.txt
+                    </div>
+                </div>
+
+                <div class="editor-container">
+                    <div class="line-numbers" id="lineNumbers">1</div>
+                    <textarea id="codeEditor" class="code-editor" spellcheck="false" placeholder="Write your code here...">// Welcome to CodeCompiler Pro! 🚀
+// Select a language and click Run or press Ctrl+Enter
+
+function fibonacci(n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+// Calculate first 10 Fibonacci numbers
+console.log("Fibonacci Sequence:");
+for (let i = 0; i < 10; i++) {
+    console.log(`F(${i}) = ${fibonacci(i)}`);
+}
+
+// Try some other features:
+const numbers = [1, 2, 3, 4, 5];
+const sum = numbers.reduce((a, b) => a + b, 0);
+console.log(`\nSum of numbers: ${sum}`);
+
+// Current time
+console.log(`Current time: ${new Date().toLocaleTimeString()}`);</textarea>
                 </div>
             </div>
 
-            <!-- Output Section -->
-            <div class="output-section">
-                <div class="section-header">
-                    <h3>
-                        <span>📊</span> Output
-                    </h3>
-                    <button class="btn-secondary" style="padding: 0.3rem 1rem;" onclick="clearOutput()">
-                        Clear
-                    </button>
+            <!-- Output Panel -->
+            <div class="output-panel">
+                <div class="output-header">
+                    <div class="output-title">
+                        <span>📤</span>
+                        OUTPUT
+                    </div>
+                    <div class="output-actions">
+                        <button class="btn-secondary" style="padding: 6px 12px;" onclick="copyOutput()" title="Copy Output">
+                            📋
+                        </button>
+                        <button class="btn-secondary" style="padding: 6px 12px;" onclick="downloadOutput()" title="Download Output">
+                            💾
+                        </button>
+                        <button class="btn-secondary" style="padding: 6px 12px;" onclick="clearOutput()" title="Clear Output">
+                            🗑️
+                        </button>
+                    </div>
                 </div>
-                <div class="output-area" id="output">
-                    <pre>Click "Run Code" to see the output...</pre>
+                <div id="outputContent" class="output-content">
+                    Ready to run your code...
                 </div>
-            </div>
-        </div>
-
-        <!-- Sample Programs -->
-        <div class="samples-section">
-            <h3>📚 Sample Programs</h3>
-            <div class="sample-grid">
-                <div class="sample-card" onclick="loadSample('hello')">
-                    <h4>Hello World</h4>
-                    <p>Basic program to print Hello World</p>
+                <div class="output-stats">
+                    <div class="stat-item">
+                        <span>⚡</span>
+                        <span id="executionTime">Ready</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>📊</span>
+                        <span id="memoryUsage">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>🔄</span>
+                        <span id="exitCode">-</span>
+                    </div>
                 </div>
-                <div class="sample-card" onclick="loadSample('fibonacci')">
-                    <h4>Fibonacci</h4>
-                    <p>Generate Fibonacci sequence</p>
-                </div>
-                <div class="sample-card" onclick="loadSample('factorial')">
-                    <h4>Factorial</h4>
-                    <p>Calculate factorial of a number</p>
-                </div>
-                <div class="sample-card" onclick="loadSample('prime')">
-                    <h4>Prime Numbers</h4>
-                    <p>Check if a number is prime</p>
-                </div>
-                <div class="sample-card" onclick="loadSample('sort')">
-                    <h4>Bubble Sort</h4>
-                    <p>Sort an array using bubble sort</p>
-                </div>
-                <div class="sample-card" onclick="loadSample('palindrome')">
-                    <h4>Palindrome</h4>
-                    <p>Check if string is palindrome</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Features Section -->
-        <div class="features-section">
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h4>Instant Execution</h4>
-                <p>Run your code instantly with our high-performance compiler</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔒</div>
-                <h4>100% Private</h4>
-                <p>Your code never leaves your browser - all compilation is local</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎨</div>
-                <h4>Syntax Highlighting</h4>
-                <p>Beautiful syntax highlighting for all supported languages</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📱</div>
-                <h4>Mobile Friendly</h4>
-                <p>Fully responsive design that works on all devices</p>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="nav-container">
-            <p>&copy; 2026 CodeMaster. All rights reserved. | Made with ❤️ for developers</p>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">
+                Executing code<span class="loading-dots"></span>
+            </div>
         </div>
-    </footer>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
 
     <script>
-        // Mobile menu toggle
-        function toggleMenu() {
-            const navLinks = document.getElementById('navLinks');
-            navLinks.classList.toggle('active');
+        // API Configuration
+        const API_URL = 'https://emkc.org/api/v2/piston/execute';
+
+        // Language configurations
+        const languageConfigs = {
+            javascript: { version: '18.15.0', extension: 'js', name: 'JavaScript' },
+            python: { version: '3.10.0', extension: 'py', name: 'Python' },
+            java: { version: '15.0.2', extension: 'java', name: 'Java' },
+            cpp: { version: '10.2.0', extension: 'cpp', name: 'C++' },
+            csharp: { version: '6.12.0', extension: 'cs', name: 'C#' },
+            typescript: { version: '5.0.3', extension: 'ts', name: 'TypeScript' },
+            ruby: { version: '3.0.1', extension: 'rb', name: 'Ruby' },
+            php: { version: '8.2.3', extension: 'php', name: 'PHP' },
+            go: { version: '1.16.4', extension: 'go', name: 'Go' },
+            rust: { version: '1.68.2', extension: 'rs', name: 'Rust' },
+            swift: { version: '5.3.3', extension: 'swift', name: 'Swift' },
+            kotlin: { version: '1.8.20', extension: 'kt', name: 'Kotlin' },
+            c: { version: '10.2.0', extension: 'c', name: 'C' },
+            r: { version: '4.3.0', extension: 'r', name: 'R' },
+            perl: { version: '5.36.0', extension: 'pl', name: 'Perl' },
+            lua: { version: '5.4.4', extension: 'lua', name: 'Lua' },
+            haskell: { version: '9.0.1', extension: 'hs', name: 'Haskell' }
+        };
+
+        // Templates
+        const templates = {
+            hello: {
+                javascript: `// Hello World in JavaScript
+console.log("Hello, World!");
+console.log("Welcome to CodeCompiler Pro!");
+
+// Interactive greeting
+const name = "Developer";
+console.log(\`Hello, \${name}! Ready to code?\`);`,
+
+                python: `# Hello World in Python
+print("Hello, World!")
+print("Welcome to CodeCompiler Pro!")
+
+# Interactive greeting
+name = "Developer"
+print(f"Hello, {name}! Ready to code?")`,
+
+                java: `// Hello World in Java
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+        System.out.println("Welcome to CodeCompiler Pro!");
+        System.out.println("Hello, Developer! Ready to code?");
+    }
+}`,
+
+                cpp: `// Hello World in C++
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello, World!" << endl;
+    cout << "Welcome to CodeCompiler Pro!" << endl;
+    cout << "Hello, Developer! Ready to code?" << endl;
+    return 0;
+}`
+            },
+            fibonacci: {
+                javascript: `// Fibonacci Sequence
+function fibonacci(n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+console.log("First 15 Fibonacci numbers:");
+for (let i = 0; i < 15; i++) {
+    console.log(\`F(\${i}) = \${fibonacci(i)}\`);
+}`,
+
+                python: `# Fibonacci Sequence
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+print("First 15 Fibonacci numbers:")
+for i in range(15):
+    print(f"F({i}) = {fibonacci(i)}")`
+            },
+            prime: {
+                javascript: `// Prime Number Generator
+function isPrime(num) {
+    if (num <= 1) return false;
+    if (num <= 3) return true;
+    if (num % 2 === 0 || num % 3 === 0) return false;
+    
+    for (let i = 5; i * i <= num; i += 6) {
+        if (num % i === 0 || num % (i + 2) === 0) return false;
+    }
+    return true;
+}
+
+console.log("Prime numbers up to 100:");
+for (let i = 2; i <= 100; i++) {
+    if (isPrime(i)) {
+        process.stdout.write(i + " ");
+    }
+}
+console.log();`,
+
+                python: `# Prime Number Generator
+def is_prime(num):
+    if num <= 1:
+        return False
+    if num <= 3:
+        return True
+    if num % 2 == 0 or num % 3 == 0:
+        return False
+    
+    i = 5
+    while i * i <= num:
+        if num % i == 0 or num % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+print("Prime numbers up to 100:")
+primes = [i for i in range(2, 101) if is_prime(i)]
+print(' '.join(map(str, primes)))`
+            }
+        };
+
+        // Line numbers
+        const editor = document.getElementById('codeEditor');
+        const lineNumbers = document.getElementById('lineNumbers');
+
+        editor.addEventListener('input', updateLineNumbers);
+        editor.addEventListener('scroll', syncScroll);
+
+        function updateLineNumbers() {
+            const lines = editor.value.split('\n').length;
+            let numbers = '';
+            for (let i = 1; i <= lines; i++) {
+                numbers += i + '\n';
+            }
+            lineNumbers.textContent = numbers;
         }
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const navLinks = document.getElementById('navLinks');
-            const menuToggle = document.querySelector('.menu-toggle');
-            
-            if (!navLinks.contains(event.target) && !menuToggle.contains(event.target)) {
-                navLinks.classList.remove('active');
-            }
-        });
-
-        // Update cursor position
-        function updateCursorPosition(event) {
-            const textarea = event.target;
-            const position = textarea.selectionStart;
-            const lines = textarea.value.substr(0, position).split('\n');
-            const lineNumber = lines.length;
-            const columnNumber = lines[lines.length - 1].length + 1;
-            
-            document.getElementById('cursorPosition').textContent = `Ln ${lineNumber}, Col ${columnNumber}`;
+        function syncScroll() {
+            lineNumbers.scrollTop = editor.scrollTop;
         }
 
         // Run code function
-        
-// Run code function - Connected to backend
-async function runCode() {
-    const output = document.getElementById('output');
-    const code = document.getElementById('codeEditor').value;
-    const language = document.getElementById('languageSelect').value;
-    
-    // Show loading state
-    output.innerHTML = '<div class="loading"></div> Compiling...';
-    
-    try {
-        const response = await fetch('/api/compile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, language })
-        });
-        
-        const result = await response.json();
-        output.innerHTML = `<pre>${result.output}</pre>`;
-        showMessage('Code executed successfully!', 'success');
-    } catch (error) {
-        output.innerHTML = `<pre style="color: #ff6b6b;">Error: ${error.message}</pre>`;
-        showMessage('Error executing code!', 'error');
-    }
-}
-        // Save code to localStorage
-        function saveCode() {
-            const code = document.getElementById('codeEditor').value;
-            localStorage.setItem('savedCode', code);
-            showMessage('Code saved successfully!', 'success');
-        }
-
-        // Clear code editor
-        function clearCode() {
-            document.getElementById('codeEditor').value = '';
-            document.getElementById('output').innerHTML = '<pre>Editor cleared. Write your code and click "Run Code".</pre>';
-            showMessage('Editor cleared!', 'success');
-        }
-
-        // Clear output
-        function clearOutput() {
-            document.getElementById('output').innerHTML = '<pre>Output cleared. Run your code again.</pre>';
-        }
-
-        // Download code as file
-        function downloadCode() {
-            const code = document.getElementById('codeEditor').value;
+        async function runCode() {
             const language = document.getElementById('languageSelect').value;
-            const extensions = {
-                python: 'py',
-                javascript: 'js',
-                java: 'java',
-                cpp: 'cpp',
-                c: 'c',
-                csharp: 'cs',
-                go: 'go',
-                rust: 'rs',
-                php: 'php',
-                swift: 'swift',
-                ruby: 'rb',
-                typescript: 'ts'
-            };
+            const code = editor.value;
+            const outputDiv = document.getElementById('outputContent');
+            const loadingOverlay = document.getElementById('loadingOverlay');
             
-            const extension = extensions[language] || 'txt';
+            if (!code.trim()) {
+                showNotification('Please enter some code to execute');
+                return;
+            }
+
+            // Show loading
+            loadingOverlay.style.display = 'flex';
+            outputDiv.textContent = 'Executing code...';
+            outputDiv.className = 'output-content';
+            
+            const startTime = performance.now();
+
+            try {
+                const config = languageConfigs[language];
+                
+                const requestBody = {
+                    language: language,
+                    version: config.version,
+                    files: [
+                        {
+                            name: `main.${config.extension}`,
+                            content: code
+                        }
+                    ],
+                    stdin: "",
+                    args: [],
+                    compile_timeout: 10000,
+                    run_timeout: 5000
+                };
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                const endTime = performance.now();
+                const executionTime = (endTime - startTime).toFixed(2);
+
+                // Update stats
+                document.getElementById('executionTime').textContent = `${executionTime}ms`;
+                document.getElementById('memoryUsage').textContent = result.run?.memory || '-';
+                document.getElementById('exitCode').textContent = result.run?.code || '-';
+
+                // Display output
+                if (result.run && result.run.output) {
+                    outputDiv.textContent = result.run.output;
+                    outputDiv.className = 'output-content success';
+                    
+                    if (result.run.stderr) {
+                        outputDiv.textContent += '\n\n--- Errors ---\n' + result.run.stderr;
+                        outputDiv.className = 'output-content error';
+                    }
+                } else if (result.run && result.run.stderr) {
+                    outputDiv.textContent = result.run.stderr;
+                    outputDiv.className = 'output-content error';
+                } else {
+                    outputDiv.textContent = 'No output generated';
+                    outputDiv.className = 'output-content';
+                }
+
+                showNotification('Code executed successfully!');
+
+            } catch (error) {
+                outputDiv.textContent = `Execution Error: ${error.message}`;
+                outputDiv.className = 'output-content error';
+                document.getElementById('executionTime').textContent = 'Error';
+                showNotification('Execution failed', 'error');
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        // Helper functions
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.borderLeftColor = type === 'success' ? 'var(--accent-primary)' : 'var(--error-color)';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function clearOutput() {
+            document.getElementById('outputContent').textContent = 'Output cleared. Ready to run your code...';
+            document.getElementById('outputContent').className = 'output-content';
+            document.getElementById('executionTime').textContent = 'Ready';
+            document.getElementById('memoryUsage').textContent = '-';
+            document.getElementById('exitCode').textContent = '-';
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('outputContent').textContent;
+            navigator.clipboard.writeText(output).then(() => {
+                showNotification('Output copied to clipboard!');
+            });
+        }
+
+        function downloadOutput() {
+            const output = document.getElementById('outputContent').textContent;
+            const blob = new Blob([output], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'output.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Output downloaded!');
+        }
+
+        function clearEditor() {
+            if (confirm('Clear the editor?')) {
+                editor.value = '';
+                updateLineNumbers();
+                showNotification('Editor cleared');
+            }
+        }
+
+        function saveCode() {
+            const code = editor.value;
+            const language = document.getElementById('languageSelect').value;
+            const config = languageConfigs[language];
             const blob = new Blob([code], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `code.${extension}`;
+            a.download = `code.${config.extension}`;
             a.click();
             URL.revokeObjectURL(url);
-            showMessage('Code downloaded successfully!', 'success');
+            showNotification('Code saved!');
         }
 
-        // Show message
-        function showMessage(text, type) {
-            const messageArea = document.getElementById('messageArea');
-            messageArea.textContent = text;
-            messageArea.className = `message ${type}`;
-            messageArea.style.display = 'block';
+        function loadCode() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.txt,.js,.py,.java,.cpp,.c,.cs,.rb,.php,.go,.rs,.swift,.kt,.r,.pl,.lua,.hs';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = readerEvent => {
+                    editor.value = readerEvent.target.result;
+                    updateLineNumbers();
+                    showNotification('Code loaded!');
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function loadTemplate(type) {
+            const language = document.getElementById('languageSelect').value;
+            const template = templates[type]?.[language] || templates[type]?.javascript;
             
-            setTimeout(() => {
-                messageArea.style.display = 'none';
-            }, 3000);
+            if (template) {
+                editor.value = template;
+                updateLineNumbers();
+                showNotification(`${type} template loaded!`);
+            } else {
+                // Fallback to JavaScript template
+                editor.value = templates[type]?.javascript || editor.value;
+                showNotification('Template loaded with default language');
+            }
         }
 
-        // Load sample programs
-        function loadSample(type) {
-            const editor = document.getElementById('codeEditor');
-            const samples = {
-                hello: {
-                    python: `print("Hello, World!")`,
-                    javascript: `console.log("Hello, World!");`,
-                    java: `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`,
-                    cpp: `#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}`
+        function loadSnippet(type) {
+            const snippets = {
+                for: {
+                    javascript: `for (let i = 0; i < 10; i++) {\n    console.log(i);\n}`,
+                    python: `for i in range(10):\n    print(i)`,
+                    java: `for (int i = 0; i < 10; i++) {\n    System.out.println(i);\n}`
                 },
-                fibonacci: {
-                    python: `# Fibonacci Sequence\ndef fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\n# Calculate first 10 numbers\nprint("Fibonacci Sequence:")\nfor i in range(10):\n    print(f"F({i}) = {fibonacci(i)}")`
+                if: {
+                    javascript: `if (condition) {\n    // code\n} else {\n    // code\n}`,
+                    python: `if condition:\n    # code\nelse:\n    # code`,
+                    java: `if (condition) {\n    // code\n} else {\n    // code\n}`
                 },
-                factorial: {
-                    python: `# Factorial\ndef factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n-1)\n\n# Calculate factorial of 5\nprint(f"Factorial of 5 is: {factorial(5)}")`
+                function: {
+                    javascript: `function name(params) {\n    // code\n    return result;\n}`,
+                    python: `def name(params):\n    # code\n    return result`,
+                    java: `public returnType name(params) {\n    // code\n    return result;\n}`
                 },
-                prime: {
-                    python: `# Prime Number Checker\ndef is_prime(n):\n    if n <= 1:\n        return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n\n# Check numbers from 1 to 20\nfor i in range(1, 21):\n    if is_prime(i):\n        print(f"{i} is prime")`
+                array: {
+                    javascript: `const arr = [1, 2, 3, 4, 5];\narr.forEach(item => console.log(item));`,
+                    python: `arr = [1, 2, 3, 4, 5]\nfor item in arr:\n    print(item)`,
+                    java: `int[] arr = {1, 2, 3, 4, 5};\nfor (int item : arr) {\n    System.out.println(item);\n}`
                 }
             };
-            
+
             const language = document.getElementById('languageSelect').value;
-            if (samples[type] && samples[type][language]) {
-                editor.value = samples[type][language];
-            } else {
-                editor.value = samples[type]?.python || "// Sample not available for this language";
-            }
+            const snippet = snippets[type]?.[language] || snippets[type]?.javascript;
             
-            showMessage('Sample loaded!', 'success');
+            if (snippet) {
+                // Insert at cursor position
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                const text = editor.value;
+                editor.value = text.substring(0, start) + snippet + text.substring(end);
+                updateLineNumbers();
+                showNotification(`${type} snippet inserted!`);
+            }
         }
 
-        // Initialize with saved code if exists
-        window.onload = function() {
-            const savedCode = localStorage.getItem('savedCode');
-            if (savedCode) {
-                document.getElementById('codeEditor').value = savedCode;
-                showMessage('Previous code restored!', 'success');
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Enter to run code
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                runCode();
             }
+            // Ctrl+S to save
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveCode();
+            }
+            // Ctrl+Shift+C to clear output
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                clearOutput();
+            }
+        });
+
+        // Initialize
+        window.onload = function() {
+            updateLineNumbers();
+            showNotification('Welcome to CodeCompiler Pro!');
         };
 
-        // Handle responsive behavior
-        window.addEventListener('resize', function() {
-            const width = window.innerWidth;
-            if (width > 768) {
-                document.getElementById('navLinks').classList.remove('active');
+        // Update language info on change
+        document.getElementById('languageSelect').addEventListener('change', function() {
+            const lang = this.value;
+            const config = languageConfigs[lang];
+            showNotification(`Switched to ${config.name}`);
+            
+            // Update tab name
+            const activeTab = document.querySelector('.tab.active span:first-child');
+            if (activeTab) {
+                activeTab.nextSibling.textContent = ` main.${config.extension}`;
             }
         });
     </script>
 </body>
 </html>
-
