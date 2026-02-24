@@ -3,598 +3,396 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ CodeCompiler Pro - Run Code in 15+ Languages</title>
+    <title>CodeMaster - Online Compiler</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .compiler-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
         }
-
-        :root {
-            --bg-primary: #0a0c10;
-            --bg-secondary: #1a1e24;
-            --bg-tertiary: #252a33;
-            --accent-primary: #00ff9d;
-            --accent-secondary: #00b8ff;
-            --text-primary: #e4e6eb;
-            --text-secondary: #b0b3b8;
-            --error-color: #ff5f5f;
-            --success-color: #00ff9d;
-            --border-color: #2e3440;
+        
+        .compiler-header {
+            text-align: center;
+            margin-bottom: 2rem;
         }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Fira Code', monospace;
-            background: var(--bg-primary);
+        
+        .compiler-header h1 {
+            font-size: 2.5rem;
             color: var(--text-primary);
-            height: 100vh;
+            margin-bottom: 0.5rem;
+        }
+        
+        .compiler-header p {
+            color: var(--text-secondary);
+        }
+        
+        .compiler-wrapper {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: var(--box-shadow);
         }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
+        
+        .compiler-toolbar {
             background: var(--bg-secondary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-primary);
-            border-radius: 4px;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        /* Header */
-        .header {
-            background: var(--bg-secondary);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 1rem 1.5rem;
             border-bottom: 1px solid var(--border-color);
-        }
-
-        .logo {
             display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            font-size: 28px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { filter: drop-shadow(0 0 2px var(--accent-primary)); }
-            50% { filter: drop-shadow(0 0 10px var(--accent-primary)); }
-            100% { filter: drop-shadow(0 0 2px var(--accent-primary)); }
-        }
-
-        .logo h1 {
-            font-size: 1.5rem;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 600;
-        }
-
-        .controls {
-            display: flex;
-            gap: 16px;
+            gap: 1rem;
             align-items: center;
             flex-wrap: wrap;
         }
-
-        .language-picker {
-            position: relative;
+        
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
         }
-
-        .lang-select {
+        
+        .language-select {
             background: var(--bg-tertiary);
             color: var(--text-primary);
             border: 1px solid var(--border-color);
-            padding: 10px 32px 10px 16px;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            min-width: 180px;
             cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2300ff9d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            min-width: 150px;
         }
-
-        .lang-select:hover {
-            border-color: var(--accent-primary);
-        }
-
-        .btn-run {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            color: var(--bg-primary);
-            border: none;
-            padding: 10px 24px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
+        
+        .btn-group {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
-
-        .btn-run:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 255, 157, 0.3);
-        }
-
-        .btn-run:active {
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
+        
+        .btn-icon {
             background: var(--bg-tertiary);
-            color: var(--text-primary);
+            color: var(--text-secondary);
             border: 1px solid var(--border-color);
-            padding: 10px 16px;
+            width: 40px;
+            height: 40px;
             border-radius: 8px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
+            font-size: 1.2rem;
+            transition: var(--transition);
         }
-
-        .btn-secondary:hover {
-            border-color: var(--accent-primary);
-            background: var(--bg-secondary);
+        
+        .btn-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
         }
-
-        /* Main Layout */
-        .main-layout {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            gap: 1px;
-            background: var(--border-color);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background: var(--bg-secondary);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .sidebar-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 600;
-            color: var(--accent-primary);
-        }
-
-        .file-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px;
-        }
-
-        .file-item {
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-bottom: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-        }
-
-        .file-item:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .file-item.active {
-            background: var(--bg-tertiary);
-            color: var(--accent-primary);
-            border-left: 2px solid var(--accent-primary);
-        }
-
-        .template-section {
-            padding: 16px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .template-title {
-            font-size: 12px;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 12px;
-            letter-spacing: 1px;
-        }
-
-        .template-grid {
+        
+        .compiler-main {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
+            grid-template-columns: 1fr;
+            gap: 0;
         }
-
-        .template-btn {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-        }
-
-        .template-btn:hover {
-            border-color: var(--accent-primary);
-            color: var(--accent-primary);
-            transform: translateY(-1px);
-        }
-
-        /* Editor Area */
-        .editor-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-primary);
-            min-width: 0;
-        }
-
-        .editor-tabs {
-            background: var(--bg-secondary);
-            padding: 0 16px;
-            display: flex;
+        
+        .editor-section {
+            background: #1e1e1e;
             border-bottom: 1px solid var(--border-color);
         }
-
-        .tab {
-            padding: 12px 20px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tab.active {
-            color: var(--accent-primary);
-            border-bottom-color: var(--accent-primary);
-        }
-
-        .editor-container {
-            flex: 1;
-            display: flex;
-            position: relative;
-            background: var(--bg-primary);
-        }
-
-        .line-numbers {
-            padding: 20px 10px;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            font-family: 'Fira Code', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            text-align: right;
-            user-select: none;
-            border-right: 1px solid var(--border-color);
-        }
-
-        .code-editor {
-            flex: 1;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: 'Fira Code', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            padding: 20px;
-            border: none;
-            resize: none;
-            outline: none;
-            white-space: pre-wrap;
-        }
-
-        /* Output Panel */
-        .output-panel {
-            width: 400px;
-            background: var(--bg-secondary);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .output-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
+        
+        .editor-header {
+            background: #2d2d2d;
+            color: #999;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #404040;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
-        .output-title {
+        
+        .editor-title {
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: var(--accent-primary);
-            font-weight: 600;
+            gap: 0.5rem;
         }
-
-        .output-actions {
+        
+        .editor-title i {
+            color: var(--primary-color);
+        }
+        
+        .editor-stats {
             display: flex;
-            gap: 8px;
+            gap: 1rem;
+            font-size: 0.85rem;
         }
-
-        .output-content {
-            flex: 1;
-            padding: 20px;
-            font-family: 'Fira Code', monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            background: var(--bg-primary);
-        }
-
-        .output-content.success {
-            color: var(--success-color);
-        }
-
-        .output-content.error {
-            color: var(--error-color);
-        }
-
-        .output-stats {
-            padding: 12px 16px;
-            background: var(--bg-tertiary);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            gap: 20px;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
+        
         .stat-item {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 0.25rem;
         }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(4px);
-            display: none;
-            justify-content: center;
+        
+        .code-editor {
+            width: 100%;
+            height: 350px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            padding: 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+        }
+        
+        .output-section {
+            background: #1e1e1e;
+        }
+        
+        .output-header {
+            background: #2d2d2d;
+            color: #999;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #404040;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            z-index: 1000;
         }
-
-        .loading-content {
+        
+        .output-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .output-content {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1.5rem;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            border: none;
+        }
+        
+        .output-content.success {
+            color: #6a9955;
+        }
+        
+        .output-content.error {
+            color: #f48771;
+        }
+        
+        .compiler-footer {
+            background: var(--bg-secondary);
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .execution-info {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .info-item i {
+            color: var(--primary-color);
+        }
+        
+        .templates-section {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .template-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
             text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
         }
-
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid var(--bg-tertiary);
-            border-top-color: var(--accent-primary);
-            border-right-color: var(--accent-secondary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+        
+        .template-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        
+        .template-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
         }
-
-        .loading-text {
+        
+        .template-card h4 {
             color: var(--text-primary);
-            font-size: 18px;
+            margin-bottom: 0.25rem;
         }
-
-        .loading-dots::after {
-            content: '';
-            animation: dots 1.5s steps(5, end) infinite;
+        
+        .template-card p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
         }
-
-        @keyframes dots {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
-        }
-
-        /* Notification */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: var(--bg-tertiary);
-            border-left: 4px solid var(--accent-primary);
-            border-radius: 6px;
-            color: var(--text-primary);
-            transform: translateX(400px);
-            transition: transform 0.3s;
-            z-index: 1001;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .sidebar {
-                width: 200px;
-            }
-            .output-panel {
-                width: 300px;
-            }
-        }
-
+        
         @media (max-width: 768px) {
-            .sidebar {
-                display: none;
+            .language-selector {
+                flex-direction: column;
+                width: 100%;
             }
-            .output-panel {
-                display: none;
+            
+            .language-select {
+                width: 100%;
+            }
+            
+            .btn-group {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .execution-info {
+                flex-direction: column;
+                gap: 0.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <span class="logo-icon">⚡</span>
-                <h1>CodeCompiler Pro</h1>
-            </div>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-code"></i>
+                CodeMaster
+            </a>
             
-            <div class="controls">
-                <div class="language-picker">
-                    <select id="languageSelect" class="lang-select">
-                        <optgroup label="Popular">
-                            <option value="javascript" selected>JavaScript (Node.js)</option>
-                            <option value="python">Python 3</option>
-                            <option value="java">Java</option>
-                            <option value="cpp">C++</option>
-                            <option value="csharp">C#</option>
-                        </optgroup>
-                        <optgroup label="Other Languages">
-                            <option value="typescript">TypeScript</option>
-                            <option value="ruby">Ruby</option>
-                            <option value="php">PHP</option>
-                            <option value="go">Go</option>
-                            <option value="rust">Rust</option>
-                            <option value="swift">Swift</option>
-                            <option value="kotlin">Kotlin</option>
-                            <option value="c">C</option>
-                            <option value="r">R</option>
-                            <option value="perl">Perl</option>
-                            <option value="lua">Lua</option>
-                            <option value="haskell">Haskell</option>
-                        </optgroup>
-                    </select>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="compiler.html" class="active"><i class="fas fa-play"></i> Compiler</a></li>
+                <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
+                <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
+                <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+            </ul>
+            
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
-
-                <button class="btn-run" onclick="runCode()">
-                    <span>▶</span>
-                    Run Code (Ctrl+Enter)
-                </button>
-
-                <button class="btn-secondary" onclick="saveCode()">
-                    <span>💾</span>
-                    Save
-                </button>
-
-                <button class="btn-secondary" onclick="loadCode()">
-                    <span>📂</span>
-                    Load
-                </button>
-
-                <button class="btn-secondary" onclick="clearEditor()">
-                    <span>🗑️</span>
-                    Clear
-                </button>
             </div>
-        </header>
+        </div>
+    </nav>
 
-        <!-- Main Layout -->
-        <div class="main-layout">
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <div class="sidebar-header">
-                    📁 EXPLORER
+    <main>
+        <div class="compiler-container">
+            <div class="compiler-header">
+                <h1><i class="fas fa-play" style="color: var(--primary-color);"></i> Online Code Compiler</h1>
+                <p>Write, compile, and run code in multiple programming languages instantly</p>
+            </div>
+
+            <div class="compiler-wrapper">
+                <div class="compiler-toolbar">
+                    <div class="language-selector">
+                        <select id="language" class="language-select">
+                            <optgroup label="Popular Languages">
+                                <option value="javascript" selected>JavaScript (Node.js)</option>
+                                <option value="python">Python 3</option>
+                                <option value="java">Java</option>
+                                <option value="cpp">C++</option>
+                                <option value="c">C</option>
+                                <option value="csharp">C#</option>
+                            </optgroup>
+                            <optgroup label="Web Languages">
+                                <option value="php">PHP</option>
+                                <option value="typescript">TypeScript</option>
+                                <option value="html">HTML/CSS</option>
+                            </optgroup>
+                            <optgroup label="Other Languages">
+                                <option value="ruby">Ruby</option>
+                                <option value="go">Go</option>
+                                <option value="rust">Rust</option>
+                                <option value="swift">Swift</option>
+                                <option value="kotlin">Kotlin</option>
+                                <option value="r">R</option>
+                            </optgroup>
+                        </select>
+                        
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="runCode()">
+                                <i class="fas fa-play"></i> Run Code
+                            </button>
+                            <button class="btn btn-outline" onclick="saveCode()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-outline" onclick="loadCode()">
+                                <i class="fas fa-folder-open"></i> Load
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="btn-icon" onclick="formatCode()" title="Format Code">
+                            <i class="fas fa-indent"></i>
+                        </button>
+                        <button class="btn-icon" onclick="clearEditor()" title="Clear Editor">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn-icon" onclick="downloadCode()" title="Download Code">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="file-list">
-                    <div class="file-item active">
-                        <span>📄</span>
-                        main.js
-                    </div>
-                    <div class="file-item">
-                        <span>📄</span>
-                        utils.js
-                    </div>
-                    <div class="file-item">
-                        <span>📄</span>
-                        style.css
-                    </div>
-                </div>
+                
+                <div class="compiler-main">
+                    <div class="editor-section">
+                        <div class="editor-header">
+                            <div class="editor-title">
+                                <i class="fas fa-code"></i>
+                                <span>Code Editor</span>
+                            </div>
+                            <div class="editor-stats">
+                                <span class="stat-item">
+                                    <i class="fas fa-text-height"></i>
+                                    <span id="lineCount">Lines: 20</span>
+                                </span>
+                                <span class="stat-item">
+                                    <i class="fas fa-font"></i>
+                                    <span id="charCount">Chars: 450</span>
+                                </span>
+                            </div>
+                        </div>
+                        <textarea id="codeEditor" class="code-editor" spellcheck="false">// Welcome to CodeMaster Compiler!
+// Write your code and click Run to execute
 
-                <div class="template-section">
-                    <div class="template-title">📋 QUICK TEMPLATES</div>
-                    <div class="template-grid">
-                        <button class="template-btn" onclick="loadTemplate('hello')">Hello World</button>
-                        <button class="template-btn" onclick="loadTemplate('fibonacci')">Fibonacci</button>
-                        <button class="template-btn" onclick="loadTemplate('prime')">Prime Numbers</button>
-                        <button class="template-btn" onclick="loadTemplate('sort')">Sorting</button>
-                        <button class="template-btn" onclick="loadTemplate('class')">Class</button>
-                        <button class="template-btn" onclick="loadTemplate('api')">API Call</button>
-                        <button class="template-btn" onclick="loadTemplate('file')">File I/O</button>
-                        <button class="template-btn" onclick="loadTemplate('math')">Math</button>
-                    </div>
-                </div>
-
-                <div class="template-section">
-                    <div class="template-title">📊 SNIPPETS</div>
-                    <div class="template-grid">
-                        <button class="template-btn" onclick="loadSnippet('for')">For Loop</button>
-                        <button class="template-btn" onclick="loadSnippet('if')">If-Else</button>
-                        <button class="template-btn" onclick="loadSnippet('function')">Function</button>
-                        <button class="template-btn" onclick="loadSnippet('array')">Array</button>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Editor Area -->
-            <div class="editor-area">
-                <div class="editor-tabs">
-                    <div class="tab active">
-                        <span>📄</span>
-                        main.js
-                        <span style="margin-left: 8px; color: var(--text-secondary);">×</span>
-                    </div>
-                    <div class="tab">
-                        <span>📄</span>
-                        output.txt
-                    </div>
-                </div>
-
-                <div class="editor-container">
-                    <div class="line-numbers" id="lineNumbers">1</div>
-                    <textarea id="codeEditor" class="code-editor" spellcheck="false" placeholder="Write your code here...">// Welcome to CodeCompiler Pro! 🚀
-// Select a language and click Run or press Ctrl+Enter
-
+// Example: Fibonacci Sequence
 function fibonacci(n) {
     if (n <= 1) return n;
     return fibonacci(n - 1) + fibonacci(n - 2);
@@ -606,92 +404,205 @@ for (let i = 0; i < 10; i++) {
     console.log(`F(${i}) = ${fibonacci(i)}`);
 }
 
-// Try some other features:
+// Try some other operations
 const numbers = [1, 2, 3, 4, 5];
 const sum = numbers.reduce((a, b) => a + b, 0);
 console.log(`\nSum of numbers: ${sum}`);
 
-// Current time
+// Current date and time
 console.log(`Current time: ${new Date().toLocaleTimeString()}`);</textarea>
+                    </div>
+                    
+                    <div class="output-section">
+                        <div class="output-header">
+                            <div class="editor-title">
+                                <i class="fas fa-terminal"></i>
+                                <span>Output</span>
+                            </div>
+                            <div class="output-actions">
+                                <button class="btn-icon" onclick="copyOutput()" title="Copy Output">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="btn-icon" onclick="clearOutput()" title="Clear Output">
+                                    <i class="fas fa-eraser"></i>
+                                </button>
+                                <button class="btn-icon" onclick="downloadOutput()" title="Download Output">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="outputContent" class="output-content">
+                            Ready to run your code...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="compiler-footer">
+                    <div class="execution-info">
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span id="executionTime">Ready</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-microchip"></i>
+                            <span id="memoryUsage">-</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-code-branch"></i>
+                            <span id="exitCode">-</span>
+                        </div>
+                    </div>
+                    <div class="language-info" id="languageInfo">
+                        JavaScript • Node.js v18
+                    </div>
                 </div>
             </div>
 
-            <!-- Output Panel -->
-            <div class="output-panel">
-                <div class="output-header">
-                    <div class="output-title">
-                        <span>📤</span>
-                        OUTPUT
+            <div class="templates-section">
+                <h3><i class="fas fa-template"></i> Code Templates</h3>
+                <div class="templates-grid">
+                    <div class="template-card" onclick="loadTemplate('hello')">
+                        <i class="fas fa-globe"></i>
+                        <h4>Hello World</h4>
+                        <p>Basic program</p>
                     </div>
-                    <div class="output-actions">
-                        <button class="btn-secondary" style="padding: 6px 12px;" onclick="copyOutput()" title="Copy Output">
-                            📋
-                        </button>
-                        <button class="btn-secondary" style="padding: 6px 12px;" onclick="downloadOutput()" title="Download Output">
-                            💾
-                        </button>
-                        <button class="btn-secondary" style="padding: 6px 12px;" onclick="clearOutput()" title="Clear Output">
-                            🗑️
-                        </button>
+                    <div class="template-card" onclick="loadTemplate('fibonacci')">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Fibonacci</h4>
+                        <p>Sequence generator</p>
                     </div>
-                </div>
-                <div id="outputContent" class="output-content">
-                    Ready to run your code...
-                </div>
-                <div class="output-stats">
-                    <div class="stat-item">
-                        <span>⚡</span>
-                        <span id="executionTime">Ready</span>
+                    <div class="template-card" onclick="loadTemplate('prime')">
+                        <i class="fas fa-shield"></i>
+                        <h4>Prime Numbers</h4>
+                        <p>Prime checker</p>
                     </div>
-                    <div class="stat-item">
-                        <span>📊</span>
-                        <span id="memoryUsage">-</span>
+                    <div class="template-card" onclick="loadTemplate('sort')">
+                        <i class="fas fa-sort"></i>
+                        <h4>Sorting</h4>
+                        <p>Bubble sort</p>
                     </div>
-                    <div class="stat-item">
-                        <span>🔄</span>
-                        <span id="exitCode">-</span>
+                    <div class="template-card" onclick="loadTemplate('class')">
+                        <i class="fas fa-cube"></i>
+                        <h4>Class</h4>
+                        <p>OOP example</p>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('api')">
+                        <i class="fas fa-cloud"></i>
+                        <h4>API Call</h4>
+                        <p>HTTP request</p>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('factorial')">
+                        <i class="fas fa-calculator"></i>
+                        <h4>Factorial</h4>
+                        <p>Recursive calc</p>
+                    </div>
+                    <div class="template-card" onclick="loadTemplate('palindrome')">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h4>Palindrome</h4>
+                        <p>String checker</p>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">
-                Executing code<span class="loading-dots"></span>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-code"></i> CodeMaster</h3>
+                    <p>Powerful online compiler and converter for developers, students, and educators.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-tools"></i> Tools</h3>
+                    <ul>
+                        <li><a href="compiler.html"><i class="fas fa-play"></i> Compiler</a></li>
+                        <li><a href="converter.html"><i class="fas fa-exchange-alt"></i> Converter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-link"></i> Quick Links</h3>
+                    <ul>
+                        <li><a href="blog.html"><i class="fas fa-blog"></i> Blog</a></li>
+                        <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+                        <li><a href="about.html"><i class="fas fa-info-circle"></i> About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3><i class="fas fa-shield-alt"></i> Legal</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-lock"></i> Privacy Policy</a></li>
+                        <li><a href="#"><i class="fas fa-file-contract"></i> Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p><i class="fas fa-copyright"></i> 2026 CodeMaster. Made with <i class="fas fa-heart"></i> for developers</p>
             </div>
         </div>
-    </div>
-
-    <!-- Notification -->
-    <div id="notification" class="notification"></div>
+    </footer>
 
     <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            const icon = themeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-theme')) {
+                icon.className = 'fas fa-sun';
+            } else {
+                icon.className = 'fas fa-moon';
+            }
+        });
+
+        // Mobile menu
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        // Editor stats
+        const editor = document.getElementById('codeEditor');
+        const lineCount = document.getElementById('lineCount');
+        const charCount = document.getElementById('charCount');
+
+        editor.addEventListener('input', updateStats);
+        
+        function updateStats() {
+            const lines = editor.value.split('\n').length;
+            const chars = editor.value.length;
+            lineCount.textContent = `Lines: ${lines}`;
+            charCount.textContent = `Chars: ${chars}`;
+        }
+
         // API Configuration
         const API_URL = 'https://emkc.org/api/v2/piston/execute';
 
         // Language configurations
         const languageConfigs = {
-            javascript: { version: '18.15.0', extension: 'js', name: 'JavaScript' },
-            python: { version: '3.10.0', extension: 'py', name: 'Python' },
-            java: { version: '15.0.2', extension: 'java', name: 'Java' },
-            cpp: { version: '10.2.0', extension: 'cpp', name: 'C++' },
-            csharp: { version: '6.12.0', extension: 'cs', name: 'C#' },
-            typescript: { version: '5.0.3', extension: 'ts', name: 'TypeScript' },
-            ruby: { version: '3.0.1', extension: 'rb', name: 'Ruby' },
-            php: { version: '8.2.3', extension: 'php', name: 'PHP' },
-            go: { version: '1.16.4', extension: 'go', name: 'Go' },
-            rust: { version: '1.68.2', extension: 'rs', name: 'Rust' },
-            swift: { version: '5.3.3', extension: 'swift', name: 'Swift' },
-            kotlin: { version: '1.8.20', extension: 'kt', name: 'Kotlin' },
-            c: { version: '10.2.0', extension: 'c', name: 'C' },
-            r: { version: '4.3.0', extension: 'r', name: 'R' },
-            perl: { version: '5.36.0', extension: 'pl', name: 'Perl' },
-            lua: { version: '5.4.4', extension: 'lua', name: 'Lua' },
-            haskell: { version: '9.0.1', extension: 'hs', name: 'Haskell' }
+            javascript: { version: '18.15.0', name: 'JavaScript', extension: 'js' },
+            python: { version: '3.10.0', name: 'Python', extension: 'py' },
+            java: { version: '15.0.2', name: 'Java', extension: 'java' },
+            cpp: { version: '10.2.0', name: 'C++', extension: 'cpp' },
+            c: { version: '10.2.0', name: 'C', extension: 'c' },
+            csharp: { version: '6.12.0', name: 'C#', extension: 'cs' },
+            php: { version: '8.2.3', name: 'PHP', extension: 'php' },
+            typescript: { version: '5.0.3', name: 'TypeScript', extension: 'ts' },
+            ruby: { version: '3.0.1', name: 'Ruby', extension: 'rb' },
+            go: { version: '1.16.4', name: 'Go', extension: 'go' },
+            rust: { version: '1.68.2', name: 'Rust', extension: 'rs' },
+            swift: { version: '5.3.3', name: 'Swift', extension: 'swift' },
+            kotlin: { version: '1.8.20', name: 'Kotlin', extension: 'kt' },
+            r: { version: '4.3.0', name: 'R', extension: 'r' }
         };
 
         // Templates
@@ -699,38 +610,16 @@ console.log(`Current time: ${new Date().toLocaleTimeString()}`);</textarea>
             hello: {
                 javascript: `// Hello World in JavaScript
 console.log("Hello, World!");
-console.log("Welcome to CodeCompiler Pro!");
-
-// Interactive greeting
-const name = "Developer";
-console.log(\`Hello, \${name}! Ready to code?\`);`,
-
+console.log("Welcome to CodeMaster Compiler!");`,
                 python: `# Hello World in Python
 print("Hello, World!")
-print("Welcome to CodeCompiler Pro!")
-
-# Interactive greeting
-name = "Developer"
-print(f"Hello, {name}! Ready to code?")`,
-
+print("Welcome to CodeMaster Compiler!")`,
                 java: `// Hello World in Java
 public class Main {
     public static void main(String[] args) {
         System.out.println("Hello, World!");
-        System.out.println("Welcome to CodeCompiler Pro!");
-        System.out.println("Hello, Developer! Ready to code?");
+        System.out.println("Welcome to CodeMaster Compiler!");
     }
-}`,
-
-                cpp: `// Hello World in C++
-#include <iostream>
-using namespace std;
-
-int main() {
-    cout << "Hello, World!" << endl;
-    cout << "Welcome to CodeCompiler Pro!" << endl;
-    cout << "Hello, Developer! Ready to code?" << endl;
-    return 0;
 }`
             },
             fibonacci: {
@@ -740,98 +629,101 @@ function fibonacci(n) {
     return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
-console.log("First 15 Fibonacci numbers:");
-for (let i = 0; i < 15; i++) {
+console.log("First 10 Fibonacci numbers:");
+for (let i = 0; i < 10; i++) {
     console.log(\`F(\${i}) = \${fibonacci(i)}\`);
 }`,
-
                 python: `# Fibonacci Sequence
 def fibonacci(n):
     if n <= 1:
         return n
     return fibonacci(n - 1) + fibonacci(n - 2)
 
-print("First 15 Fibonacci numbers:")
-for i in range(15):
+print("First 10 Fibonacci numbers:")
+for i in range(10):
     print(f"F({i}) = {fibonacci(i)}")`
             },
             prime: {
-                javascript: `// Prime Number Generator
+                javascript: `// Prime Number Checker
 function isPrime(num) {
     if (num <= 1) return false;
-    if (num <= 3) return true;
-    if (num % 2 === 0 || num % 3 === 0) return false;
-    
-    for (let i = 5; i * i <= num; i += 6) {
-        if (num % i === 0 || num % (i + 2) === 0) return false;
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+        if (num % i === 0) return false;
     }
     return true;
 }
 
-console.log("Prime numbers up to 100:");
-for (let i = 2; i <= 100; i++) {
+console.log("Prime numbers up to 50:");
+for (let i = 2; i <= 50; i++) {
     if (isPrime(i)) {
-        process.stdout.write(i + " ");
+        console.log(i);
     }
-}
-console.log();`,
-
-                python: `# Prime Number Generator
+}`,
+                python: `# Prime Number Checker
 def is_prime(num):
     if num <= 1:
         return False
-    if num <= 3:
-        return True
-    if num % 2 == 0 or num % 3 == 0:
-        return False
-    
-    i = 5
-    while i * i <= num:
-        if num % i == 0 or num % (i + 2) == 0:
+    for i in range(2, int(num ** 0.5) + 1):
+        if num % i == 0:
             return False
-        i += 6
     return True
 
-print("Prime numbers up to 100:")
-primes = [i for i in range(2, 101) if is_prime(i)]
-print(' '.join(map(str, primes)))`
+print("Prime numbers up to 50:")
+for i in range(2, 51):
+    if is_prime(i):
+        print(i)`
+            },
+            sort: {
+                javascript: `// Bubble Sort Implementation
+function bubbleSort(arr) {
+    const sorted = [...arr];
+    for (let i = 0; i < sorted.length - 1; i++) {
+        for (let j = 0; j < sorted.length - i - 1; j++) {
+            if (sorted[j] > sorted[j + 1]) {
+                [sorted[j], sorted[j + 1]] = [sorted[j + 1], sorted[j]];
+            }
+        }
+    }
+    return sorted;
+}
+
+const numbers = [64, 34, 25, 12, 22, 11, 90];
+console.log("Original array:", numbers);
+console.log("Sorted array:", bubbleSort(numbers));`
+            },
+            factorial: {
+                javascript: `// Factorial Calculator
+function factorial(n) {
+    if (n === 0 || n === 1) return 1;
+    return n * factorial(n - 1);
+}
+
+for (let i = 0; i <= 10; i++) {
+    console.log(\`\${i}! = \${factorial(i)}\`);
+}`,
+                python: `# Factorial Calculator
+def factorial(n):
+    if n == 0 or n == 1:
+        return 1
+    return n * factorial(n - 1)
+
+for i in range(11):
+    print(f"{i}! = {factorial(i)}")`
             }
         };
 
-        // Line numbers
-        const editor = document.getElementById('codeEditor');
-        const lineNumbers = document.getElementById('lineNumbers');
-
-        editor.addEventListener('input', updateLineNumbers);
-        editor.addEventListener('scroll', syncScroll);
-
-        function updateLineNumbers() {
-            const lines = editor.value.split('\n').length;
-            let numbers = '';
-            for (let i = 1; i <= lines; i++) {
-                numbers += i + '\n';
-            }
-            lineNumbers.textContent = numbers;
-        }
-
-        function syncScroll() {
-            lineNumbers.scrollTop = editor.scrollTop;
-        }
-
         // Run code function
         async function runCode() {
-            const language = document.getElementById('languageSelect').value;
+            const language = document.getElementById('language').value;
             const code = editor.value;
             const outputDiv = document.getElementById('outputContent');
-            const loadingOverlay = document.getElementById('loadingOverlay');
             
             if (!code.trim()) {
-                showNotification('Please enter some code to execute');
+                outputDiv.textContent = 'Error: No code to execute';
+                outputDiv.className = 'output-content error';
                 return;
             }
 
-            // Show loading
-            loadingOverlay.style.display = 'flex';
             outputDiv.textContent = 'Executing code...';
             outputDiv.className = 'output-content';
             
@@ -873,9 +765,9 @@ print(' '.join(map(str, primes)))`
                 const executionTime = (endTime - startTime).toFixed(2);
 
                 // Update stats
-                document.getElementById('executionTime').textContent = `${executionTime}ms`;
-                document.getElementById('memoryUsage').textContent = result.run?.memory || '-';
-                document.getElementById('exitCode').textContent = result.run?.code || '-';
+                document.getElementById('executionTime').textContent = `Time: ${executionTime}ms`;
+                document.getElementById('memoryUsage').textContent = result.run?.memory || 'Memory: -';
+                document.getElementById('exitCode').textContent = `Exit: ${result.run?.code || '-'}`;
 
                 // Display output
                 if (result.run && result.run.output) {
@@ -894,30 +786,14 @@ print(' '.join(map(str, primes)))`
                     outputDiv.className = 'output-content';
                 }
 
-                showNotification('Code executed successfully!');
-
             } catch (error) {
                 outputDiv.textContent = `Execution Error: ${error.message}`;
                 outputDiv.className = 'output-content error';
-                document.getElementById('executionTime').textContent = 'Error';
-                showNotification('Execution failed', 'error');
-            } finally {
-                loadingOverlay.style.display = 'none';
+                document.getElementById('executionTime').textContent = 'Time: Error';
             }
         }
 
         // Helper functions
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.style.borderLeftColor = type === 'success' ? 'var(--accent-primary)' : 'var(--error-color)';
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-
         function clearOutput() {
             document.getElementById('outputContent').textContent = 'Output cleared. Ready to run your code...';
             document.getElementById('outputContent').className = 'output-content';
@@ -929,7 +805,7 @@ print(' '.join(map(str, primes)))`
         function copyOutput() {
             const output = document.getElementById('outputContent').textContent;
             navigator.clipboard.writeText(output).then(() => {
-                showNotification('Output copied to clipboard!');
+                alert('Output copied to clipboard!');
             });
         }
 
@@ -942,20 +818,18 @@ print(' '.join(map(str, primes)))`
             a.download = 'output.txt';
             a.click();
             URL.revokeObjectURL(url);
-            showNotification('Output downloaded!');
         }
 
         function clearEditor() {
             if (confirm('Clear the editor?')) {
                 editor.value = '';
-                updateLineNumbers();
-                showNotification('Editor cleared');
+                updateStats();
             }
         }
 
         function saveCode() {
             const code = editor.value;
-            const language = document.getElementById('languageSelect').value;
+            const language = document.getElementById('language').value;
             const config = languageConfigs[language];
             const blob = new Blob([code], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
@@ -964,78 +838,63 @@ print(' '.join(map(str, primes)))`
             a.download = `code.${config.extension}`;
             a.click();
             URL.revokeObjectURL(url);
-            showNotification('Code saved!');
         }
 
         function loadCode() {
             const input = document.createElement('input');
             input.type = 'file';
-            input.accept = '.txt,.js,.py,.java,.cpp,.c,.cs,.rb,.php,.go,.rs,.swift,.kt,.r,.pl,.lua,.hs';
+            input.accept = '.txt,.js,.py,.java,.cpp,.c,.cs,.php,.ts,.rb,.go,.rs,.swift,.kt,.r';
             input.onchange = e => {
                 const file = e.target.files[0];
                 const reader = new FileReader();
                 reader.onload = readerEvent => {
                     editor.value = readerEvent.target.result;
-                    updateLineNumbers();
-                    showNotification('Code loaded!');
+                    updateStats();
                 };
                 reader.readAsText(file);
             };
             input.click();
         }
 
+        function downloadCode() {
+            const code = editor.value;
+            const language = document.getElementById('language').value;
+            const config = languageConfigs[language];
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `code.${config.extension}`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function formatCode() {
+            // Basic formatting - in production, use a proper formatter
+            const code = editor.value;
+            const lines = code.split('\n');
+            const formatted = lines.map(line => line.trim()).join('\n');
+            editor.value = formatted;
+            updateStats();
+        }
+
         function loadTemplate(type) {
-            const language = document.getElementById('languageSelect').value;
+            const language = document.getElementById('language').value;
             const template = templates[type]?.[language] || templates[type]?.javascript;
             
             if (template) {
                 editor.value = template;
-                updateLineNumbers();
-                showNotification(`${type} template loaded!`);
-            } else {
-                // Fallback to JavaScript template
-                editor.value = templates[type]?.javascript || editor.value;
-                showNotification('Template loaded with default language');
+                updateStats();
             }
         }
 
-        function loadSnippet(type) {
-            const snippets = {
-                for: {
-                    javascript: `for (let i = 0; i < 10; i++) {\n    console.log(i);\n}`,
-                    python: `for i in range(10):\n    print(i)`,
-                    java: `for (int i = 0; i < 10; i++) {\n    System.out.println(i);\n}`
-                },
-                if: {
-                    javascript: `if (condition) {\n    // code\n} else {\n    // code\n}`,
-                    python: `if condition:\n    # code\nelse:\n    # code`,
-                    java: `if (condition) {\n    // code\n} else {\n    // code\n}`
-                },
-                function: {
-                    javascript: `function name(params) {\n    // code\n    return result;\n}`,
-                    python: `def name(params):\n    # code\n    return result`,
-                    java: `public returnType name(params) {\n    // code\n    return result;\n}`
-                },
-                array: {
-                    javascript: `const arr = [1, 2, 3, 4, 5];\narr.forEach(item => console.log(item));`,
-                    python: `arr = [1, 2, 3, 4, 5]\nfor item in arr:\n    print(item)`,
-                    java: `int[] arr = {1, 2, 3, 4, 5};\nfor (int item : arr) {\n    System.out.println(item);\n}`
-                }
-            };
-
-            const language = document.getElementById('languageSelect').value;
-            const snippet = snippets[type]?.[language] || snippets[type]?.javascript;
-            
-            if (snippet) {
-                // Insert at cursor position
-                const start = editor.selectionStart;
-                const end = editor.selectionEnd;
-                const text = editor.value;
-                editor.value = text.substring(0, start) + snippet + text.substring(end);
-                updateLineNumbers();
-                showNotification(`${type} snippet inserted!`);
-            }
-        }
+        // Update language info
+        document.getElementById('language').addEventListener('change', function() {
+            const lang = this.value;
+            const config = languageConfigs[lang];
+            document.getElementById('languageInfo').textContent = 
+                `${config.name} • v${config.version}`;
+        });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
@@ -1049,31 +908,15 @@ print(' '.join(map(str, primes)))`
                 e.preventDefault();
                 saveCode();
             }
-            // Ctrl+Shift+C to clear output
-            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-                e.preventDefault();
-                clearOutput();
-            }
         });
 
         // Initialize
         window.onload = function() {
-            updateLineNumbers();
-            showNotification('Welcome to CodeCompiler Pro!');
+            updateStats();
+            document.getElementById('languageInfo').textContent = 
+                'JavaScript • Node.js v18';
         };
-
-        // Update language info on change
-        document.getElementById('languageSelect').addEventListener('change', function() {
-            const lang = this.value;
-            const config = languageConfigs[lang];
-            showNotification(`Switched to ${config.name}`);
-            
-            // Update tab name
-            const activeTab = document.querySelector('.tab.active span:first-child');
-            if (activeTab) {
-                activeTab.nextSibling.textContent = ` main.${config.extension}`;
-            }
-        });
     </script>
+    <script src="compiler.js"></script>
 </body>
 </html>
