@@ -657,36 +657,31 @@ for i in range(10):
         }
 
         // Run code function
-        function runCode() {
-            const output = document.getElementById('output');
-            const code = document.getElementById('codeEditor').value;
-            const language = document.getElementById('languageSelect').value;
-            
-            // Show loading state
-            output.innerHTML = '<div class="loading"></div> Compiling...';
-            
-            // Simulate compilation (replace with actual compiler logic)
-            setTimeout(() => {
-                try {
-                    // This is a simulation - you'll need to implement actual compilation
-                    if (language === 'python') {
-                        // Simulate Python execution (for demo purposes)
-                        if (code.includes('print')) {
-                            output.innerHTML = '<pre>Fibonacci Sequence:\nF(0) = 0\nF(1) = 1\nF(2) = 1\nF(3) = 2\nF(4) = 3\nF(5) = 5\nF(6) = 8\nF(7) = 13\nF(8) = 21\nF(9) = 34</pre>';
-                        } else {
-                            output.innerHTML = '<pre>Code executed successfully!\nNo output to display.</pre>';
-                        }
-                    } else {
-                        output.innerHTML = `<pre>Executing ${language} code...\nOutput will appear here.\n\nNote: Full compilation for ${language} would be implemented here.</pre>`;
-                    }
-                    showMessage('Code executed successfully!', 'success');
-                } catch (error) {
-                    output.innerHTML = `<pre style="color: #ff6b6b;">Error: ${error.message}</pre>`;
-                    showMessage('Error executing code!', 'error');
-                }
-            }, 1000);
-        }
-
+        
+// Run code function - Connected to backend
+async function runCode() {
+    const output = document.getElementById('output');
+    const code = document.getElementById('codeEditor').value;
+    const language = document.getElementById('languageSelect').value;
+    
+    // Show loading state
+    output.innerHTML = '<div class="loading"></div> Compiling...';
+    
+    try {
+        const response = await fetch('/api/compile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, language })
+        });
+        
+        const result = await response.json();
+        output.innerHTML = `<pre>${result.output}</pre>`;
+        showMessage('Code executed successfully!', 'success');
+    } catch (error) {
+        output.innerHTML = `<pre style="color: #ff6b6b;">Error: ${error.message}</pre>`;
+        showMessage('Error executing code!', 'error');
+    }
+}
         // Save code to localStorage
         function saveCode() {
             const code = document.getElementById('codeEditor').value;
@@ -798,3 +793,4 @@ for i in range(10):
     </script>
 </body>
 </html>
+
